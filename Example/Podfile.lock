@@ -1,0 +1,27 @@
+PODS:
+  - FBSnapshotTestCase (2.1.4):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
+  - FBSnapshotTestCase/Core (2.1.4)
+  - FBSnapshotTestCase/SwiftSupport (2.1.4):
+    - FBSnapshotTestCase/Core
+  - FeedVideo (0.1.0)
+
+DEPENDENCIES:
+  - FBSnapshotTestCase
+  - FeedVideo (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - FBSnapshotTestCase
+
+EXTERNAL SOURCES:
+  FeedVideo:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
+  FeedVideo: e20025ffa3f3b0c528bdc7a0dcbbae6aef2cdb2e
+
+PODFILE CHECKSUM: 7dc2a52415c5e88f560d109644089b8e316a0822
+
+COCOAPODS: 1.10.0
