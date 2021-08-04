@@ -75,9 +75,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
         };
         _maximumPreloadDataCount = 3;
         _maximumPreloadPlayerCount = 2;
-        _preloadObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting
-                                                                  order:VFPCalculationOrder + 1
-                                                                   mode:kCFRunLoopDefaultMode];
+        _preloadObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder + 1 mode:kCFRunLoopDefaultMode];
     }
     return self;
 }

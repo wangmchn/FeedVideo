@@ -14,7 +14,6 @@
 		6003F598195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F596195388D20070C39A /* InfoPlist.strings */; };
 		6003F59A195388D20070C39A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F599195388D20070C39A /* main.m */; };
 		6003F59E195388D20070C39A /* FVAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F59D195388D20070C39A /* FVAppDelegate.m */; };
-		6003F5A7195388D20070C39A /* FVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5A6195388D20070C39A /* FVViewController.m */; };
 		6003F5A9195388D20070C39A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5A8195388D20070C39A /* Images.xcassets */; };
 		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
 		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
@@ -58,8 +57,6 @@
 		6003F59B195388D20070C39A /* FeedVideo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FeedVideo-Prefix.pch"; sourceTree = "<group>"; };
 		6003F59C195388D20070C39A /* FVAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FVAppDelegate.h; sourceTree = "<group>"; };
 		6003F59D195388D20070C39A /* FVAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FVAppDelegate.m; sourceTree = "<group>"; };
-		6003F5A5195388D20070C39A /* FVViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FVViewController.h; sourceTree = "<group>"; };
-		6003F5A6195388D20070C39A /* FVViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FVViewController.m; sourceTree = "<group>"; };
 		6003F5A8195388D20070C39A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6003F5AE195388D20070C39A /* FeedVideo_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FeedVideo_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -173,8 +170,6 @@
 				6003F59C195388D20070C39A /* FVAppDelegate.h */,
 				6003F59D195388D20070C39A /* FVAppDelegate.m */,
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
-				6003F5A5195388D20070C39A /* FVViewController.h */,
-				6003F5A6195388D20070C39A /* FVViewController.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -491,7 +486,6 @@
 				6003F59E195388D20070C39A /* FVAppDelegate.m in Sources */,
 				CFC6E09526B7F613006085B6 /* TestVideoData.m in Sources */,
 				CFC6E08E26B7F5D6006085B6 /* FVPlayerContainerCollectionViewCell.m in Sources */,
-				6003F5A7195388D20070C39A /* FVViewController.m in Sources */,
 				CFD83F0B26BAA1BE00A998C5 /* FVPreloadManager.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				CFC6E09026B7F5D6006085B6 /* FVPlayerContainerTableViewCell.m in Sources */,

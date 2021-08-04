@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define VFPCalculationOrder LONG_MAX - 100
+#define FVCalculationOrder LONG_MAX - 100
 
 static inline void fv_invalid_observer(CFRunLoopObserverRef observer) {
     if (CFRunLoopObserverIsValid(observer)) {

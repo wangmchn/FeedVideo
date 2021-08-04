@@ -126,8 +126,8 @@ static NSString *const kAppointKey = @"kAppointKey";
         _trigger = trigger;
         _trigger.delegate = self;
         _calculator = calculator;
-        _observer = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:VFPCalculationOrder mode:kCFRunLoopDefaultMode];
-        _endDisplayingObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:VFPCalculationOrder - 1 mode:kCFRunLoopCommonModes];
+        _observer = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder mode:kCFRunLoopDefaultMode];
+        _endDisplayingObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder - 1 mode:kCFRunLoopCommonModes];
         [_calculator.visibleContainers enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             fv_setParentMonitor(obj, self);
             obj._fv_isDisplay = YES;

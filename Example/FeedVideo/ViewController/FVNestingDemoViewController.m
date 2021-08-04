@@ -58,11 +58,6 @@
     [self.view addSubview:self.tableView];
     
     self.title = @"NestingDemo";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"移除播放器" style:UIBarButtonItemStylePlain target:self action:@selector(testDown:)];
-}
-
-- (void)testDown:(id)sender {
-    
 }
 
 - (void)setUpPlayerManager {
