@@ -4,7 +4,8 @@ platform :ios, '9.0'
 
 target 'FeedVideo_Example' do
   pod 'FeedVideo', :path => '../'
-
+  pod 'KVOController'
+  
   target 'FeedVideo_Tests' do
     inherit! :search_paths
 

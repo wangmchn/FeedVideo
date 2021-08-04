@@ -8,20 +8,20 @@
 
 #import "FVRunLoopObserver.h"
 
-@interface _VFPRunLoopTask : NSObject
+@interface _FVRunLoopTask : NSObject
 @property (nonatomic, copy) void (^block)(CFRunLoopObserverRef, CFRunLoopActivity);
 @property (nonatomic, copy) NSString *key;
 
 @property (nonatomic, assign) BOOL repeats;
 @end
 
-@implementation _VFPRunLoopTask
+@implementation _FVRunLoopTask
 
 - (BOOL)isEqual:(id)object {
     if ([super isEqual:object]) {
         return YES;
     }
-    if ([object isKindOfClass:self.class] && [[(_VFPRunLoopTask *)object key] isEqualToString:self.key]) {
+    if ([object isKindOfClass:self.class] && [[(_FVRunLoopTask *)object key] isEqualToString:self.key]) {
         return YES;
     }
     return NO;
@@ -30,7 +30,7 @@
 @end
 
 @interface FVRunLoopObserver ()
-@property (nonatomic, strong) NSMutableArray<_VFPRunLoopTask *> *tasks;
+@property (nonatomic, strong) NSMutableArray<_FVRunLoopTask *> *tasks;
 @property (nonatomic, strong) NSString *mode;
 @end
 
@@ -49,9 +49,9 @@
                 return;
             }
             __strong typeof(weak_self) strong_self = weak_self;
-            NSArray<_VFPRunLoopTask *> *tasks = strong_self.tasks.copy;
-            NSMutableArray<_VFPRunLoopTask *> *invalidTasks = [NSMutableArray array];
-            [tasks enumerateObjectsUsingBlock:^(_VFPRunLoopTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSArray<_FVRunLoopTask *> *tasks = strong_self.tasks.copy;
+            NSMutableArray<_FVRunLoopTask *> *invalidTasks = [NSMutableArray array];
+            [tasks enumerateObjectsUsingBlock:^(_FVRunLoopTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 obj.block(observer, activity);
                 if (!obj.repeats) {
                     [invalidTasks addObject:obj];
@@ -68,7 +68,7 @@
 
 - (void)observeWithKey:(NSString *)key repeats:(BOOL)repeats usingBlock:(void (^)(CFRunLoopObserverRef, CFRunLoopActivity))block {
     [self removeTaskForKey:key];
-    _VFPRunLoopTask *task = [_VFPRunLoopTask new];
+    _FVRunLoopTask *task = [_FVRunLoopTask new];
     task.repeats = repeats;
     task.block = block;
     task.key = key;
@@ -79,8 +79,8 @@
 }
 
 - (void)removeTaskForKey:(NSString *)key {
-    __block _VFPRunLoopTask *task = nil;
-    [self.tasks enumerateObjectsUsingBlock:^(_VFPRunLoopTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    __block _FVRunLoopTask *task = nil;
+    [self.tasks enumerateObjectsUsingBlock:^(_FVRunLoopTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj.key isEqualToString:key]) {
             task = obj;
             *stop = YES;

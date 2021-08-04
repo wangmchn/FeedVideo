@@ -5,14 +5,17 @@ PODS:
   - FBSnapshotTestCase/SwiftSupport (2.1.4):
     - FBSnapshotTestCase/Core
   - FeedVideo (0.1.0)
+  - KVOController (1.2.0)
 
 DEPENDENCIES:
   - FBSnapshotTestCase
   - FeedVideo (from `../`)
+  - KVOController
 
 SPEC REPOS:
   trunk:
     - FBSnapshotTestCase
+    - KVOController
 
 EXTERNAL SOURCES:
   FeedVideo:
@@ -21,7 +24,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   FeedVideo: e20025ffa3f3b0c528bdc7a0dcbbae6aef2cdb2e
+  KVOController: d72ace34afea42468329623b3379ab3cd1d286b6
 
-PODFILE CHECKSUM: 7dc2a52415c5e88f560d109644089b8e316a0822
+PODFILE CHECKSUM: 6508629ee5d15cf4f3f17a2b45c786aba34a0a1e
 
 COCOAPODS: 1.10.0

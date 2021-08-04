@@ -36,7 +36,7 @@ NS_INLINE void fv_preload(id<FVPlayerProtocol> player, id data) {
         return;
     }
     
-    if (![player.fv_data isEqual:data]) {
+    if (![player fv_isPlayingData:data]) {
         [player fv_preload:data];
     }
 }
@@ -175,7 +175,7 @@ NS_INLINE void fv_preload(id<FVPlayerProtocol> player, id data) {
     
     if (startPlay) {
         id videoInfo = playerContainer.fv_videoInfo;
-        if ([self.focusPlayer.fv_data isEqual:videoInfo]) {
+        if ([self.focusPlayer fv_isPlayingData:videoInfo]) {
             [self.focusPlayer fv_play];
         } else {
             [self.focusPlayer fv_load:videoInfo];

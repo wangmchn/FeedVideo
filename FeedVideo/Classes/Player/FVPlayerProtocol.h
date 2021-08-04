@@ -14,14 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol FVPlayerProtocol <NSObject>
 @required
-/// 当前播放器对应的视频数据
-@property (nonatomic, nullable, readonly) id fv_data;
 /// 播放器的视图，该视图会被添加到聚焦的 view 上
 @property (nonatomic, readonly) UIView *fv_playerView;
 /// 加载数据
 - (void)fv_load:(id)data;
 /// 预加载数据
 - (void)fv_preload:(id)data;
+/// 正在播放数据
+- (BOOL)fv_isPlayingData:(id)data;
 
 - (void)fv_play;
 - (void)fv_pause;
