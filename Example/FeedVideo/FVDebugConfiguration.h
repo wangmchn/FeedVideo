@@ -1,6 +1,6 @@
 //
 //  FVDebugConfiguration.h
-//  VideoFeedsPlay
+//  FeedVideo
 //
 //  Created by Mark on 2019/10/9.
 //  Copyright © 2019 Tencent.Inc. All rights reserved.

@@ -30,6 +30,9 @@
 		CFC6E09526B7F613006085B6 /* TestVideoData.m in Sources */ = {isa = PBXBuildFile; fileRef = CFC6E09426B7F613006085B6 /* TestVideoData.m */; };
 		CFC6E09D26B7F867006085B6 /* FVCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = CFC6E09C26B7F867006085B6 /* FVCollectionViewLayout.m */; };
 		CFC6E0AA26B7FB25006085B6 /* FVDebugConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CFC6E0A926B7FB25006085B6 /* FVDebugConfiguration.m */; };
+		CFD83F0226BAA11300A998C5 /* FVNestingDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CFD83F0026BAA11300A998C5 /* FVNestingDemoViewController.m */; };
+		CFD83F0326BAA11300A998C5 /* FVTikTokViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CFD83F0126BAA11300A998C5 /* FVTikTokViewController.m */; };
+		CFD83F0B26BAA1BE00A998C5 /* FVPreloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CFD83F0926BAA1BE00A998C5 /* FVPreloadManager.m */; };
 		D9B291F1B7F72D6EFB278770 /* Pods_FeedVideo_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3171E8151BCCFD902DE2862A /* Pods_FeedVideo_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +88,12 @@
 		CFC6E09C26B7F867006085B6 /* FVCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVCollectionViewLayout.m; sourceTree = "<group>"; };
 		CFC6E0A826B7FB24006085B6 /* FVDebugConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVDebugConfiguration.h; sourceTree = "<group>"; };
 		CFC6E0A926B7FB25006085B6 /* FVDebugConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVDebugConfiguration.m; sourceTree = "<group>"; };
+		CFD83EFE26BAA11300A998C5 /* FVTikTokViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVTikTokViewController.h; sourceTree = "<group>"; };
+		CFD83EFF26BAA11300A998C5 /* FVNestingDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVNestingDemoViewController.h; sourceTree = "<group>"; };
+		CFD83F0026BAA11300A998C5 /* FVNestingDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVNestingDemoViewController.m; sourceTree = "<group>"; };
+		CFD83F0126BAA11300A998C5 /* FVTikTokViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVTikTokViewController.m; sourceTree = "<group>"; };
+		CFD83F0926BAA1BE00A998C5 /* FVPreloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVPreloadManager.m; sourceTree = "<group>"; };
+		CFD83F0A26BAA1BE00A998C5 /* FVPreloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVPreloadManager.h; sourceTree = "<group>"; };
 		E754EA819E6BD97F313ABEDA /* Pods-FeedVideo_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FeedVideo_Example.release.xcconfig"; path = "Target Support Files/Pods-FeedVideo_Example/Pods-FeedVideo_Example.release.xcconfig"; sourceTree = "<group>"; };
 		F120767E364B171C42B4D220 /* FeedVideo.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FeedVideo.podspec; path = ../FeedVideo.podspec; sourceTree = "<group>"; };
 		FF5B357B4420644EE19A9558 /* Pods-FeedVideo_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FeedVideo_Tests.release.xcconfig"; path = "Target Support Files/Pods-FeedVideo_Tests/Pods-FeedVideo_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -157,6 +166,7 @@
 				CFC6E0A926B7FB25006085B6 /* FVDebugConfiguration.m */,
 				CFC6E09326B7F613006085B6 /* TestVideoData.h */,
 				CFC6E09426B7F613006085B6 /* TestVideoData.m */,
+				CFD83F0626BAA11700A998C5 /* ViewController */,
 				CFC6E09A26B7F867006085B6 /* Layout */,
 				CFC6E08526B7F5D6006085B6 /* Views */,
 				CFC6E07126B7A81E006085B6 /* Player */,
@@ -216,6 +226,8 @@
 		CFC6E07126B7A81E006085B6 /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				CFD83F0A26BAA1BE00A998C5 /* FVPreloadManager.h */,
+				CFD83F0926BAA1BE00A998C5 /* FVPreloadManager.m */,
 				CFC6E07226B7A845006085B6 /* FVAVPlayer.h */,
 				CFC6E07326B7A845006085B6 /* FVAVPlayer.m */,
 			);
@@ -258,6 +270,17 @@
 				CFC6E09C26B7F867006085B6 /* FVCollectionViewLayout.m */,
 			);
 			path = Layout;
+			sourceTree = "<group>";
+		};
+		CFD83F0626BAA11700A998C5 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				CFD83EFF26BAA11300A998C5 /* FVNestingDemoViewController.h */,
+				CFD83F0026BAA11300A998C5 /* FVNestingDemoViewController.m */,
+				CFD83EFE26BAA11300A998C5 /* FVTikTokViewController.h */,
+				CFD83F0126BAA11300A998C5 /* FVTikTokViewController.m */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		F46AD94088B092237EC30110 /* Pods */ = {
@@ -460,6 +483,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFD83F0226BAA11300A998C5 /* FVNestingDemoViewController.m in Sources */,
+				CFD83F0326BAA11300A998C5 /* FVTikTokViewController.m in Sources */,
 				CFC6E07426B7A845006085B6 /* FVAVPlayer.m in Sources */,
 				CFC6E09D26B7F867006085B6 /* FVCollectionViewLayout.m in Sources */,
 				CFC6E08F26B7F5D6006085B6 /* FVMonitorSupplierTableViewCell.m in Sources */,
@@ -467,6 +492,7 @@
 				CFC6E09526B7F613006085B6 /* TestVideoData.m in Sources */,
 				CFC6E08E26B7F5D6006085B6 /* FVPlayerContainerCollectionViewCell.m in Sources */,
 				6003F5A7195388D20070C39A /* FVViewController.m in Sources */,
+				CFD83F0B26BAA1BE00A998C5 /* FVPreloadManager.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				CFC6E09026B7F5D6006085B6 /* FVPlayerContainerTableViewCell.m in Sources */,
 				CFC6E0AA26B7FB25006085B6 /* FVDebugConfiguration.m in Sources */,

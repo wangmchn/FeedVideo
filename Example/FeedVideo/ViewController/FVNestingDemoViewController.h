@@ -1,5 +1,5 @@
 //
-//  FVPlayerContainerTableViewCell.h
+//  FVNestingDemoViewController.h
 //  FeedVideo
 //
 //  Created by Mark on 2019/9/26.
@@ -10,8 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FVPlayerContainerTableViewCell : UITableViewCell
-@property (nonatomic, strong) NSString *strURL;
+@interface FVNestingDemoViewController : UIViewController
+
 @end
 
 NS_ASSUME_NONNULL_END

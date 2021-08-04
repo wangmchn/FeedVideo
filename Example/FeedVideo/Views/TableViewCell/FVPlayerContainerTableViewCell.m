@@ -1,6 +1,6 @@
 //
 //  FVPlayerContainerTableViewCell.m
-//  VideoFeedsPlay
+//  FeedVideo
 //
 //  Created by Mark on 2019/9/26.
 //  Copyright © 2019 Tencent.Inc. All rights reserved.

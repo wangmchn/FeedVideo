@@ -1,6 +1,6 @@
 //
 //  TestVideoData.m
-//  VideoFeedsPlay
+//  FeedVideo
 //
 //  Created by 王敏 on 2019/10/10.
 //  Copyright © 2019 Tencent.Inc. All rights reserved.
