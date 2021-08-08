@@ -25,6 +25,7 @@ NS_INLINE void fv_addPlayer(id<FVPlayerProtocol> player, UIView<FVPlayerContaine
     if ([container respondsToSelector:@selector(fv_willAddPlayer:context:)]) {
         [container fv_willAddPlayer:player context:context];
     }
+    player.fv_playerView.frame = container.fv_playerContainerView.bounds;
     [container.fv_playerContainerView addSubview:player.fv_playerView];
     if ([container respondsToSelector:@selector(fv_didAddPlayer:context:)]) {
         [container fv_didAddPlayer:player context:context];

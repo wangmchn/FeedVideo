@@ -18,8 +18,6 @@
 
 @property (nonatomic, strong) AVPlayerItem *playerItem;
 
-@property (nonatomic, assign) FVPlayerState state;
-
 @property (nonatomic, copy) void (^completionBlock)(id<FVPlayerProtocol> player);
 
 @property (nonatomic, strong) NSHashTable<id<FVAVPlayerDelegate>> *delegates;
@@ -32,7 +30,6 @@
     if (self = [super initWithFrame:frame]) {
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(playerDidFinishPlay:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-        
         _delegates = [NSHashTable weakObjectsHashTable];
     }
     return self;
@@ -46,9 +43,13 @@
     } else {
         self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
     }
+    if (self.playerLayer) {
+        [self.playerLayer removeFromSuperlayer];
+    }
     self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
     self.playerLayer.backgroundColor = [UIColor blackColor].CGColor;
     [self.layer addSublayer:self.playerLayer];
+    [self setNeedsLayout];
     __weak typeof(self) weak_self = self;
     [self.KVOController observe:self.playerItem keyPath:@"status" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         __strong typeof(weak_self) strong_self = weak_self;
@@ -58,7 +59,7 @@
             case AVPlayerItemStatusFailed:
                 break;
             case AVPlayerItemStatusReadyToPlay:
-                if (self.state == FVPlayerStateNone) {
+                if (strong_self.preloading) {
                     return;
                 }
                 [strong_self.player play];
@@ -119,19 +120,6 @@
     return [_delegates containsObject:delegate];
 }
 
-- (void)setState:(FVPlayerState)state {
-    if (state == _state) {
-        return;
-    }
-    
-    _state = state;
-    [self.delegates.allObjects enumerateObjectsUsingBlock:^(id<FVAVPlayerDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj respondsToSelector:@selector(playerStateChange:)]) {
-            [obj playerStateChange:_state];
-        }
-    }];
-}
-
 @end
 
 @implementation FVAVPlayer (FeedVideo)
@@ -156,7 +144,7 @@
     if (![data isKindOfClass:[NSString class]]) {
         return;
     }
-    self.state &= ~FVPlayerStateIsPreloading;
+    self.preloading = NO;
     [self loadURL:data];
 }
 
@@ -172,7 +160,7 @@
     if (![data isKindOfClass:[NSString class]]) {
         return;
     }
-    self.state &= FVPlayerStateIsPreloading;
+    self.preloading = YES;
     [self loadURL:data];
 }
 

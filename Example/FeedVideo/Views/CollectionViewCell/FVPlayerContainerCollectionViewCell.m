@@ -91,8 +91,4 @@
     
 }
 
-- (void)playerStateChange:(FVPlayerState)state {
-    
-}
-
 @end

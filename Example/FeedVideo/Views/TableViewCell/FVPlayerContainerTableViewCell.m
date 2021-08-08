@@ -42,7 +42,7 @@
 
 #pragma mark - FVPlayerContainer
 - (UIView *)fv_playerContainerView {
-    return self;
+    return self.contentView;
 }
 
 - (id)fv_videoInfo {
@@ -71,10 +71,6 @@
 
 #pragma mark - FVAVPlayerDelegate
 - (void)playerOnComplete {
-    
-}
-
-- (void)playerStateChange:(FVPlayerState)state {
     
 }
 

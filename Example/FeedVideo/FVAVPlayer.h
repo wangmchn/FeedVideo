@@ -11,21 +11,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, FVPlayerState) {
-    FVPlayerStateNone = 0,
-    FVPlayerStateIsPreloading = 1 << 0,
-    FVPlayerStateDisappear = 1 << 1,
-};
-
 @protocol FVAVPlayerDelegate <NSObject>
 
 @optional
 - (void)playerOnComplete;
-- (void)playerStateChange:(FVPlayerState)state;
 
 @end
 
 @interface FVAVPlayer : UIView
+
+@property (nonatomic, assign) BOOL preloading;
 
 - (void)addDelegate:(id<FVAVPlayerDelegate>)delegate;
 - (void)removeDelegate:(id<FVAVPlayerDelegate>)delegate;
