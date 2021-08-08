@@ -8,7 +8,7 @@ target 'FeedVideo_Example' do
   
   target 'FeedVideo_Tests' do
     inherit! :search_paths
-
+    pod 'OCMock'
     pod 'FBSnapshotTestCase'
   end
 end

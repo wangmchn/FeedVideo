@@ -98,8 +98,8 @@
 }
 
 - (FVIndexPathNode *)fv_nextNodeForPlayingView:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < 1) {
-        return FVIndexPathNode.fv_root([NSIndexPath indexPathForRow:9 inSection:0]);
+    if (indexPath.row + 1 < self.dataList.count) {
+        return FVIndexPathNode.fv_root([NSIndexPath indexPathForRow:indexPath.row + 1 inSection:0]);
     }
     return nil;
 }
