@@ -22,9 +22,20 @@
 
 @property (nonatomic, strong) NSHashTable<id<FVAVPlayerDelegate>> *delegates;
 
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
+
 @end
 
 @implementation FVAVPlayer
+
+- (UIActivityIndicatorView *)indicatorView {
+    if (!_indicatorView) {
+        _indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        [_indicatorView sizeToFit];
+        _indicatorView.hidesWhenStopped = YES;
+    }
+    return _indicatorView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
@@ -51,14 +62,18 @@
     [self.layer addSublayer:self.playerLayer];
     [self setNeedsLayout];
     __weak typeof(self) weak_self = self;
+    [self addSubview:self.indicatorView];
+    [self.indicatorView startAnimating];
     [self.KVOController observe:self.playerItem keyPath:@"status" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         __strong typeof(weak_self) strong_self = weak_self;
         AVPlayerItemStatus status = [change[NSKeyValueChangeNewKey] intValue];
         NSLog(@"player status change: %@", @(status));
         switch (status) {
             case AVPlayerItemStatusFailed:
+                [self.indicatorView stopAnimating];
                 break;
             case AVPlayerItemStatusReadyToPlay:
+                [self.indicatorView stopAnimating];
                 if (strong_self.preloading) {
                     return;
                 }
@@ -76,7 +91,7 @@
     if (notification.object != self.playerItem) {
         return;
     }
-    
+    self.playerItem = nil;
     [self.delegates.allObjects enumerateObjectsUsingBlock:^(id<FVAVPlayerDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj respondsToSelector:@selector(playerOnComplete)]) {
             [obj playerOnComplete];
@@ -91,6 +106,7 @@
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     self.playerLayer.frame = self.bounds;
+    self.indicatorView.center = CGPointMake(self.bounds.size.width / 2.0, self.bounds.size.height / 2.0);
     [CATransaction commit];
 }
 

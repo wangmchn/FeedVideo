@@ -58,7 +58,7 @@ NS_INLINE void fv_preload(id<FVPlayerProtocol> player, id data) {
     __weak typeof(self) weak_self = self;
     return ^void(id<FVPlayerProtocol> player) {
         __strong typeof(weak_self) strong_self = weak_self;
-        if ([strong_self respondsToSelector:@selector(handler:didPlayerFinish:)]) {
+        if ([strong_self.delegate respondsToSelector:@selector(handler:didPlayerFinish:)]) {
             [strong_self.delegate handler:strong_self didPlayerFinish:strong_self.focusPlayer];
         }
     };

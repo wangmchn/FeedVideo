@@ -94,7 +94,7 @@
 }
 
 - (FVContinuePolicy)fv_continuePolicyForPlayingView:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath {
-    return FVContinuePolicyPlayNext;
+    return FVContinuePolicyRemoveAndPlayNext;
 }
 
 - (FVIndexPathNode *)fv_nextNodeForPlayingView:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath {

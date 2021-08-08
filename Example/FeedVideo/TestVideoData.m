@@ -13,6 +13,7 @@
 @end
 
 @implementation TestVideoData
+
 + (instancetype)shareInstance {
     static TestVideoData *instance = nil;
     static dispatch_once_t onceToken;
@@ -26,10 +27,10 @@
     self = [super init];
     if (self) {
         self.testVideoInfoArray = @[
-            @"https://v-cdn.zjol.com.cn/277000.mp4",
-            @"https://v-cdn.zjol.com.cn/277001.mp4",
-            @"https://v-cdn.zjol.com.cn/277002.mp4",
-            @"https://v-cdn.zjol.com.cn/277003.mp4",
+            @"https://v-cdn.zjol.com.cn/280443.mp4",
+            @"https://v-cdn.zjol.com.cn/276982.mp4",
+            @"https://v-cdn.zjol.com.cn/276984.mp4",
+            @"https://v-cdn.zjol.com.cn/276985.mp4",
             @"https://v-cdn.zjol.com.cn/277004.mp4",
         ];
     }
@@ -40,7 +41,7 @@
     if (self.testVideoInfoArray.count < 0) {
         return nil;
     }
-    NSInteger random = arc4random()%(self.testVideoInfoArray.count);
+    NSInteger random = arc4random() % (self.testVideoInfoArray.count);
     if (random >= 0 && random < self.testVideoInfoArray.count) {
         return [self.testVideoInfoArray objectAtIndex:random];
     }
