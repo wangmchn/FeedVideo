@@ -18,8 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface FVContinueHandler : NSObject
 /// 提供尾部的 monitor，从尾部开始遍历续播，即当页面嵌套多个列表时，优先续播子列表
 @property (nonatomic, copy) FVFocusMonitor *(^tailMonitorProvider)(void);
-
+/// 触发自动续播
 - (void)trigger:(id<FVPlayerProtocol>)sender;
+/// 取消自动续播任务
 - (void)cancelContinue;
 
 @end

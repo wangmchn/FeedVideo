@@ -129,7 +129,7 @@ NS_INLINE UIView<FVPlayerContainer> *fv_findTailContainer(__kindof UIView *view)
         return view;
     }
     FVFocusMonitor *monitor = fv_getChildMonitor(view);
-    return monitor.tail.focusContainer;
+    return monitor.tail.focus;
 }
 
 NS_ASSUME_NONNULL_END

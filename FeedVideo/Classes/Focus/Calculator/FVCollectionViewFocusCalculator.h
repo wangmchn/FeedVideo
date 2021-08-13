@@ -10,10 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- 查询 UICollectionView 当前聚焦视图的模块
- @discussion 默认实现为遍历当前所有可见的 cell，寻找满足协议的视图
- */
+/// 查询 UICollectionView 当前聚焦视图的模块
+/// @discussion 默认实现为遍历当前所有可见的 cell，寻找满足协议的视图
 @interface FVCollectionViewFocusCalculator : FVFocusCalculator <UICollectionView *>
 /// 默认为 ture
 @property (nonatomic, assign) BOOL focusAnimatable;

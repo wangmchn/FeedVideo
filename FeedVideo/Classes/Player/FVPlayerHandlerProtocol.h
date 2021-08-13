@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)containerDidResignFocus:(UIView<FVPlayerContainer> *)playerContainer context:(nullable FVContext *)context;
 
 - (void)removeAllPlayer;
+
 - (void)removePlayer:(id<FVPlayerProtocol>)player pause:(BOOL)pause context:(nullable FVContext *)context;
 
 - (void)preloadPlayerList:(NSArray *)videoDataList;

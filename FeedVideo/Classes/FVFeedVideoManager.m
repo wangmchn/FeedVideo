@@ -97,7 +97,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
 - (void)removePlayer:(id<FVPlayerProtocol>)player pause:(BOOL)pause context:(nullable FVContext *)context {
     // 当前移除的播放器是聚焦的播放器，需要同步清理 monitor 的缓存数据
     UIView<FVPlayerContainer> *container = fv_getContainer(player);
-    if (self.monitor.tail.focusContainer == container) {
+    if (self.monitor.tail.focus == container) {
         [self.monitor clear];
     }
     [self.playerHandler removePlayer:player pause:pause context:context];
@@ -218,8 +218,8 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
     while (curser) {
         if ([curser conformsToProtocol:@protocol(FVContainerSupplier)]) {
             FVFocusMonitor *monitor = fv_getChildMonitor((id<FVContainerSupplier>)curser);
-            UIView *view = monitor.focusContainer ? monitor.focusContainer : monitor.abortContainer;
-            NSIndexPath *indexPath = monitor.focusContainer ? monitor.focusIndexPath : monitor.abortIndexPath;
+            UIView *view = monitor.focus ? monitor.focus : monitor.abort;
+            NSIndexPath *indexPath = monitor.focus ? monitor.focusIndexPath : monitor.abortIndexPath;
             block((id<FVContainerSupplier>)curser, view, indexPath, &stop);
         }
         if (stop) {
@@ -232,7 +232,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
 - (void)fv_enumerateResponderReverseUsingBlock:(void (^)(id responder, BOOL *stop))block {
     __block BOOL stop = NO;
     [self.monitor.tail enumerateMonitorChainReverse:YES usingBlock:^(FVFocusMonitor * _Nonnull monitor, BOOL * _Nonnull innerStop) {
-        block(monitor.focusContainer, &stop);
+        block(monitor.focus, &stop);
         if (stop) {
             *innerStop = YES;
         }
@@ -257,7 +257,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
             obj.delegate = nil;
             tail = obj;
         }];
-        resign = tail.focusContainer;
+        resign = tail.focus;
     } else {
         resign = oldView;
     }
@@ -269,7 +269,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
         obj.delegate = self;
         tail = obj;
     }];
-    UIView<FVPlayerContainer> *become = tail.focusContainer;
+    UIView<FVPlayerContainer> *become = tail.focus;
     
     // STEP 3.
     // 抛给 playerHandler
@@ -307,11 +307,11 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
     [self fv_monitor:monitor focusDidChange:oldView to:newView appointPlayer:nil startPlay:YES context:context];
 }
 
-- (void)monitor:(FVFocusMonitor *)monitor didFindNotAutoPlay:(__kindof UIView *)view context:(nullable FVContext *)context {
+- (void)monitor:(FVFocusMonitor *)monitor didAbort:(__kindof UIView *)view context:(nullable FVContext *)context {
     if (self.disable) {
         return;
     }
-    if (monitor.tail.focusContainer) {
+    if (monitor.tail.focus) {
         // 当前有视频播放，不需要再做数据预加载了
         return;
     }
@@ -319,7 +319,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
     FVFocusMonitor *child = fv_getChildMonitor(view);
     UIView *tail = view;
     if (child) {
-        tail = child.tail.abortContainer;
+        tail = child.tail.abort;
     }
     [self fv_preloadDataListWithView:tail];
 }
@@ -328,14 +328,14 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
     if (self.disable) {
         return;
     }
-    UIView<FVPlayerContainer> *container = monitor.tail.focusContainer;
+    UIView<FVPlayerContainer> *container = monitor.tail.focus;
     NSParameterAssert([container conformsToProtocol:@protocol(FVPlayerContainer)]);
     if ([container conformsToProtocol:@protocol(FVPlayerContainer)] && ![container._fv_lastIdentifier isEqualToString:container.fv_uniqueIdentifier]) {
         [self.playerHandler containerDidResignFocus:container context:context];
         [self.playerHandler containerDidBecomeFocus:container appointPlayer:nil startPlay:YES context:context];
     }
     // 预加载
-    [self preloadListInDefaultModeWithView:monitor.tail.focusContainer];
+    [self preloadListInDefaultModeWithView:monitor.tail.focus];
 }
 
 - (void)monitor:(FVFocusMonitor *)monitor containerWillDisplay:(__kindof UIView *)container indexPath:(NSIndexPath *)indexPath {
@@ -385,7 +385,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
 #pragma mark - VFPPlayerHandlerDataSource
 
 - (id<FVPlayerProtocol>)playerWithVideoInfo:(id)videoInfo displayingPlayerList:(NSArray<id<FVPlayerProtocol>> *)playerList {
-    id<FVPlayerProtocol> player = [self.playerProvider fv_playerForVideoInfo:videoInfo exceptPlayerList:playerList];
+    id<FVPlayerProtocol> player = [self.playerProvider fv_playerForVideoInfo:videoInfo displayingPlayerList:playerList];
     fv_setPlayerOwner(player, self, nil);
     return player;
 }

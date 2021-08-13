@@ -50,7 +50,7 @@
             obj.delegate = nil;
             tail = obj;
         }];
-        container = tail.focusContainer;
+        container = tail.focus;
     } else {
         container = view;
     }
@@ -61,7 +61,7 @@
     !self.completionBlock ?: self.completionBlock(self, isNotAuto);
 }
 
-- (void)monitor:(FVFocusMonitor *)monitor didFindNotAutoPlay:(__kindof UIView *)view context:(nullable FVContext *)context {
+- (void)monitor:(FVFocusMonitor *)monitor didAbort:(__kindof UIView *)view context:(nullable FVContext *)context {
     !self.completionBlock ?: self.completionBlock(self, YES);
 }
 

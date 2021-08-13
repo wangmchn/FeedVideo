@@ -22,10 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fv_preload:(id)data;
 /// 正在播放数据
 - (BOOL)fv_isPlayingData:(id)data;
-
+/// 播放
 - (void)fv_play;
+/// 暂停
 - (void)fv_pause;
+/// 停止
 - (void)fv_stop;
+/// 重播
 - (void)fv_replay;
 
 @optional

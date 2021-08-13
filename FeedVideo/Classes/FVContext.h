@@ -15,6 +15,7 @@ typedef NSString *FVTriggerType NS_EXTENSIBLE_STRING_ENUM;
 extern FVTriggerType const FVTriggerTypeAuto;
 /// 使用方主动调用触发
 extern FVTriggerType const FVTriggerTypeAppoint;
+/// 续播触发
 extern FVTriggerType const FVTriggerTypeContinue;
 
 @interface FVContext : NSObject

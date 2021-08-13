@@ -17,29 +17,20 @@ extern BOOL VFPPointEqualToPoint(CGPoint point1, CGPoint point2);
 @protocol FVFocusTriggerDelegate <NSObject>
 @required
 
-/**
- 视图位置、元素等发生改变，触发外界进行重新计算
-
- @param trigger 当前触发器
- */
+/// 视图位置、元素等发生改变，触发外界进行重新计算
+/// @param trigger 当前触发器
 - (void)triggerDidTrigger:(FVFocusTrigger *)trigger;
 
-/**
- 视图已经不再展示的回调
-
- @param trigger 当前触发器
- @param view 不可见的视图
- @param indexPath 视图位置信息
- */
+/// 视图已经不再展示的回调
+/// @param trigger 当前触发器
+/// @param view 不可见的视图
+/// @param indexPath 视图位置信息
 - (void)trigger:(FVFocusTrigger *)trigger viewDidEndDisplaying:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath;
 
-/**
- 视图即将出现的回调
-
- @param trigger 当前触发器
- @param view 即将展示的视图
- @param indexPath 视图位置信息
- */
+/// 视图即将出现的回调
+/// @param trigger 当前触发器
+/// @param view 即将展示的视图
+/// @param indexPath 视图位置信息
 - (void)trigger:(FVFocusTrigger *)trigger viewWillDisplay:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath;
 
 @end
@@ -54,10 +45,7 @@ extern BOOL VFPPointEqualToPoint(CGPoint point1, CGPoint point2);
 - (void)start;
 /// 停止
 - (void)stop;
-
-/**
- 触发 Trigger 进行一次视图位置、元素改变的回调
- */
+/// 触发 Trigger 进行一次视图位置、元素改变的回调
 - (void)trigger;
 
 @end

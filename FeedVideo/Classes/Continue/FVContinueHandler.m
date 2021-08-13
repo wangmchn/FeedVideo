@@ -25,7 +25,7 @@
     }
     FVFocusMonitor *tailMonitor = self.tailMonitorProvider();
     [tailMonitor enumerateMonitorChainReverse:YES usingBlock:^(FVFocusMonitor * _Nonnull monitor, BOOL * _Nonnull stop) {
-        if (!monitor.focusContainer || ![monitor.ownerSupplier conformsToProtocol:@protocol(FVContinueProtocol)]) {
+        if (!monitor.focus || ![monitor.ownerSupplier conformsToProtocol:@protocol(FVContinueProtocol)]) {
             return;
         }
         FVContinuePolicy policy = [self continuePolicyFromMonitor:monitor];
@@ -64,7 +64,7 @@
         return NO;
     }
     NSIndexPath *indexPath = monitor.focusIndexPath;
-    UIView *view = monitor.focusContainer;
+    UIView *view = monitor.focus;
     FVIndexPathNode *node = [monitor.ownerSupplier fv_nextNodeForPlayingView:view indexPath:indexPath];
     if (shouldRemove) {
         [monitor clearAndNotify];
@@ -84,14 +84,14 @@
 
 - (CGFloat)delayTimeFromMonitor:(FVFocusMonitor *)monitor {
     if ([monitor.ownerSupplier respondsToSelector:@selector(fv_delayTimeForPlayingNextAtPlayingView:indexPath:)]) {
-        return [monitor.ownerSupplier fv_delayTimeForPlayingNextAtPlayingView:monitor.focusContainer indexPath:monitor.focusIndexPath];
+        return [monitor.ownerSupplier fv_delayTimeForPlayingNextAtPlayingView:monitor.focus indexPath:monitor.focusIndexPath];
     }
     return 0.0;
 }
 
 - (FVContinuePolicy)continuePolicyFromMonitor:(FVFocusMonitor *)monitor {
     if ([monitor.ownerSupplier respondsToSelector:@selector(fv_continuePolicyForPlayingView:indexPath:)]) {
-        return [monitor.ownerSupplier fv_continuePolicyForPlayingView:monitor.focusContainer indexPath:monitor.focusIndexPath];
+        return [monitor.ownerSupplier fv_continuePolicyForPlayingView:monitor.focus indexPath:monitor.focusIndexPath];
     }
     return FVContinuePolicyNone;
 }

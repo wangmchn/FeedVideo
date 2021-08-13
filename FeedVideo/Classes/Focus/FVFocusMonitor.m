@@ -32,8 +32,8 @@ static NSString *const kAppointKey = @"kAppointKey";
 
 @interface FVFocusMonitor () <FVFocusTriggerDelegate>
 @property (nonatomic, assign) NSUInteger focusCursor;
-@property (nonatomic, readwrite, nullable) __kindof UIView *focusContainer;
-@property (nonatomic, readwrite, nullable) __kindof UIView *abortContainer;
+@property (nonatomic, readwrite, nullable) __kindof UIView *focus;
+@property (nonatomic, readwrite, nullable) __kindof UIView *abort;
 @property (nonatomic, strong) FVRunLoopObserver *observer;
 @property (nonatomic, strong) FVRunLoopObserver *endDisplayingObserver;
 @property (nonatomic, strong) FVSupplierCandidate *candidate;
@@ -88,8 +88,8 @@ static NSString *const kAppointKey = @"kAppointKey";
 - (void)clear {
     self.candidate = nil;
     self.triggerBlock = nil;
-    self.focusContainer = nil;
-    self.abortContainer = nil;
+    self.focus = nil;
+    self.abort = nil;
 }
 
 - (void)clearAndNotify {
@@ -103,7 +103,7 @@ static NSString *const kAppointKey = @"kAppointKey";
     BOOL stop = NO;
     while (cursor) {
         block(cursor, &stop);
-        FVFocusMonitor *monitor = reverse ? fv_getParentMonitor(cursor.ownerSupplier) : fv_getChildMonitor(cursor.focusContainer);
+        FVFocusMonitor *monitor = reverse ? fv_getParentMonitor(cursor.ownerSupplier) : fv_getChildMonitor(cursor.focus);
         if (!monitor || stop) {
             break;
         }
@@ -174,8 +174,8 @@ static NSString *const kAppointKey = @"kAppointKey";
     [_trigger start];
 }
 
-- (void)setFocusContainer:(__kindof UIView *)focusContainer {
-    _focusContainer = focusContainer;
+- (void)setFocus:(__kindof UIView *)focusContainer {
+    _focus = focusContainer;
     ++self.focusCursor;
 }
 
@@ -188,16 +188,16 @@ static NSString *const kAppointKey = @"kAppointKey";
         return;
     }
     _disable = disable;
-    if (!_disable && self.focusContainer && !self.focusContainer._fv_isDisplay) {
+    if (!_disable && self.focus && !self.focus._fv_isDisplay) {
         [self clearFocusContainer];
     }
 }
 
 - (NSIndexPath *)focusIndexPath {
-    if (!self.focusContainer) {
+    if (!self.focus) {
         return nil;
     }
-    return [self.calculator indexPathForContainer:self.focusContainer];
+    return [self.calculator indexPathForContainer:self.focus];
 }
 
 - (FVIndexPathNode *)focusIndexPathNode {
@@ -206,15 +206,15 @@ static NSString *const kAppointKey = @"kAppointKey";
         return nil;
     }
     FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath);
-    node.child = fv_getChildMonitor(self.focusContainer).focusIndexPathNode;
+    node.child = fv_getChildMonitor(self.focus).focusIndexPathNode;
     return node;
 }
 
 - (NSIndexPath *)abortIndexPath {
-    if (!self.abortContainer) {
+    if (!self.abort) {
         return nil;
     }
-    return [self.calculator indexPathForContainer:self.abortContainer];
+    return [self.calculator indexPathForContainer:self.abort];
 }
 
 - (FVIndexPathNode *)abortIndexPathNode {
@@ -223,7 +223,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         return nil;
     }
     FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath);
-    node.child = fv_getChildMonitor(self.abortContainer).abortIndexPathNode;
+    node.child = fv_getChildMonitor(self.abort).abortIndexPathNode;
     return node;
 }
 
@@ -238,9 +238,9 @@ static NSString *const kAppointKey = @"kAppointKey";
     }
     
     view._fv_isDisplay = NO;
-    UIView<FVPlayerContainer> *tailContainer = self.tail.focusContainer;
+    UIView<FVPlayerContainer> *tailContainer = self.tail.focus;
         
-    if (view == self.focusContainer && [tailContainer conformsToProtocol:@protocol(FVPlayerContainer)]) {
+    if (view == self.focus && [tailContainer conformsToProtocol:@protocol(FVPlayerContainer)]) {
         NSString *lastIdentifier = tailContainer._fv_lastIdentifier;
         NSUInteger focusCursor = self.focusCursor;
         view._fv_willEndDisplaying = YES;
@@ -261,23 +261,23 @@ static NSString *const kAppointKey = @"kAppointKey";
                 if (!view.window || !view._fv_isDisplay) {
                     // view invisible or not focus anymore.
                     // just call end displaying.
-                    if (view == strong_self.focusContainer) {
+                    if (view == strong_self.focus) {
                         [strong_self clearFocusContainer];
                     }
                     [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
                     return;
                 }
-                if (view != strong_self.focusContainer) {
+                if (view != strong_self.focus) {
                     [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
                     [strong_self.delegate monitor:strong_self containerWillDisplay:view indexPath:indexPath];
                     return;
                 }
-                if (view == strong_self.focusContainer && strong_self.focusCursor != focusCursor) {
+                if (view == strong_self.focus && strong_self.focusCursor != focusCursor) {
                     // view == self.focusContainer && self.cursor != cursor && displaying
                     // 说明新的聚焦操作已经进来了，什么都不需要处理
                     return;
                 }
-                UIView<FVPlayerContainer> *container = strong_self.tail.focusContainer;
+                UIView<FVPlayerContainer> *container = strong_self.tail.focus;
                 if (![container conformsToProtocol:@protocol(FVPlayerContainer)]) {
                     // shouldn't come here, but anyway.
                     [strong_self clearFocusContainer];
@@ -307,11 +307,11 @@ static NSString *const kAppointKey = @"kAppointKey";
     // 那么不需要在此刻调用 `-monitor:containerWillDisplay:indexPath:` 的回调，不可见的异步逻辑会处理这个情况
     // 详见 `-trigger:viewDidEndDisplaying:indexPath:` 处理
     // should call `dispatch_async` block later.
-    if (view != self.focusContainer) {
+    if (view != self.focus) {
         CHECK_DISABLE_AND_RETURN
         
         NSString *newIdentifier = [fv_findTailContainer(view) fv_uniqueIdentifier];
-        NSString *oldIdentifier = [fv_findTailContainer(self.focusContainer) _fv_lastIdentifier];
+        NSString *oldIdentifier = [fv_findTailContainer(self.focus) _fv_lastIdentifier];
         if ([oldIdentifier isEqualToString:newIdentifier]) {
             // UICollectionView 刷新，可能换一批 cell，如果 id 一致的话自动切换
             [self didFindTarget:view node:self.focusIndexPathNode isAppoint:YES makeFocus:NO context:nil usingBlock:nil];
@@ -343,7 +343,7 @@ static NSString *const kAppointKey = @"kAppointKey";
             
             notify(^{
                 // 修改手动点击某个非聚焦的视频进行播放，手势滑动一点距离，就会触发重新计算聚焦，切换到聚焦视频的进行播放的问题
-                if (strong_self.shouldChangeFocusContainerToTarget && !strong_self.shouldChangeFocusContainerToTarget(strong_self.focusContainer, targetContainer)) {
+                if (strong_self.shouldChangeFocusContainerToTarget && !strong_self.shouldChangeFocusContainerToTarget(strong_self.focus, targetContainer)) {
                     return;
                 }
                 [strong_self didFindTarget:targetContainer node:FVIndexPathNode.fv_root(indexPath) isAppoint:NO makeFocus:NO context:fv_context(FVTriggerTypeAuto, nil) usingBlock:nil];
@@ -372,10 +372,10 @@ static NSString *const kAppointKey = @"kAppointKey";
 
 /// 检测下聚焦视图的可见态是否满足，不满足则认为不再展示
 - (void)clearFocusViewIfVisibilityNotSatisfied {
-    if (!self.focusContainer) {
+    if (!self.focus) {
         return;
     }
-    BOOL isVisible = self.calculator.viewVisibilityChecker(self.focusContainer);
+    BOOL isVisible = self.calculator.viewVisibilityChecker(self.focus);
     if (!isVisible) {
         [self clearFocusContainer];
     }
@@ -414,9 +414,9 @@ static NSString *const kAppointKey = @"kAppointKey";
         if ([target conformsToProtocol:@protocol(FVPlayerContainer)]) {
             target._fv_lastIdentifier = [(id<FVPlayerContainer>)target fv_uniqueIdentifier];
         }
-        UIView *oldView = strong_self.focusContainer;
-        strong_self.focusContainer = target;
-        strong_self.abortContainer = nil;
+        UIView *oldView = strong_self.focus;
+        strong_self.focus = target;
+        strong_self.abort = nil;
         if (completionBlock) {
             completionBlock(oldView, target);
         } else {
@@ -427,8 +427,8 @@ static NSString *const kAppointKey = @"kAppointKey";
     void (^notifyNotAuto)(void) = ^void (void) {
         __strong typeof(weak_self) strong_self = weak_self;
         CHECK_DISABLE_IN_BLOCK_AND_RETURN
-        strong_self.abortContainer = target;
-        [strong_self.delegate monitor:strong_self didFindNotAutoPlay:target context:context];
+        strong_self.abort = target;
+        [strong_self.delegate monitor:strong_self didAbort:target context:context];
     };
     
     void (^notifySame)(void) = ^void (void) {
@@ -441,7 +441,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         }
     };
     
-    if (target && target == self.focusContainer && !target._fv_willEndDisplaying) {
+    if (target && target == self.focus && !target._fv_willEndDisplaying) {
         CHECK_DISABLE_AND_RETURN
         FVFocusMonitor *monitor = fv_getChildMonitor(target);
         monitor.delegate = self.delegate;

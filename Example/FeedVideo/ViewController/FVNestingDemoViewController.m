@@ -123,7 +123,7 @@
 }
 
 #pragma mark - FVPlayerProviderProtocol
-- (id<FVPlayerProtocol>)fv_playerForVideoInfo:(id)videoInfo exceptPlayerList:(NSArray<id<FVPlayerProtocol>> *)playerList {
+- (id<FVPlayerProtocol>)fv_playerForVideoInfo:(id)videoInfo displayingPlayerList:(NSArray<id<FVPlayerProtocol>> *)playerList {
     return [[FVReusePool sharedInstance] findPlayerRandomlyWithIdentifier:videoInfo type:@"" except:[NSSet setWithArray:playerList]];
 }
 

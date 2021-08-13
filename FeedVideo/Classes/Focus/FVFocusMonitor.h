@@ -19,52 +19,37 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol FVFocusMonitorDelegate <NSObject>
 @required
 
-/**
- 聚焦视图发生变化时的回调
- @discussion view 为 `UIView<FVPlayerContainer> *` or `UIView<FVContainerSupplier> *` 其中一种
- 
- @param monitor 聚焦检测器
- @param oldView 原聚集视图，可能为 nil
- @param newView 新聚焦视图，可能为 nil
- @param context 上下文信息，自动触发为 nil, 由外界 appoint 透传
- */
+/// 聚焦视图发生变化时的回调
+/// @discussion view 为 `UIView<FVPlayerContainer> *` or `UIView<FVContainerSupplier> *` 其中一种
+/// @param monitor 聚焦检测器
+/// @param oldView 原聚集视图，可能为 nil
+/// @param newView 新聚焦视图，可能为 nil
+/// @param context 上下文信息
 - (void)monitor:(FVFocusMonitor *)monitor focusDidChange:(nullable __kindof UIView *)oldView to:(nullable __kindof UIView *)newView context:(nullable FVContext *)context;
 
-/**
- 聚焦视图触发，找到相同的视图的回调
-
- @param monitor 聚焦检测器
- @param view 找到的聚焦视图
- @param context 上下文信息，自动触发为 nil, 由外界 appoint 透传
- */
+/// 聚焦视图触发，找到相同的视图的回调
+/// @param monitor 聚焦检测器
+/// @param view 找到的聚焦视图
+/// @param context 上下文信息
 - (void)monitor:(FVFocusMonitor *)monitor didFindSame:(nullable __kindof UIView *)view context:(nullable FVContext *)context;
 
-/**
- 聚焦视图触发，找到非自动播放的视图
+/// 聚焦视图触发，找到非自动播放的视图
+/// @param monitor 聚焦检测器
+/// @param view 找到的聚焦视图，但是因为非自动播放聚焦失败
+/// @param context 上下文信息，自动触发为 nil, 由外界 appoint 透传
+- (void)monitor:(FVFocusMonitor *)monitor didAbort:(nonnull __kindof UIView *)view context:(nullable FVContext *)context;
 
- @param monitor 聚焦检测器
- @param view 找到的聚焦视图，但是因为非自动播放聚焦失败
- @param context 上下文信息，自动触发为 nil, 由外界 appoint 透传 
- */
-- (void)monitor:(FVFocusMonitor *)monitor didFindNotAutoPlay:(nonnull __kindof UIView *)view context:(nullable FVContext *)context;
-
-/**
- 即将展示的回调
- @discussion container 为 `UIView<FVPlayerContainer> *` or `UIView<FVContainerSupplier> *` 其中一种
-
- @param monitor 聚焦检测器
- @param container 即将展示的视图
- @param indexPath 视图位置
- */
+/// 即将展示的回调
+/// @discussion container 为 `UIView<FVPlayerContainer> *` or `UIView<FVContainerSupplier> *` 其中一种
+/// @param monitor 聚焦检测器
+/// @param container 即将展示的视图
+/// @param indexPath 视图位置
 - (void)monitor:(FVFocusMonitor *)monitor containerWillDisplay:(__kindof UIView *)container indexPath:(NSIndexPath *)indexPath;
 
-/**
- 停止展示回调
-
- @param monitor 聚焦检测器
- @param container 停止展示的回调
- @param indexPath 视图位置
- */
+/// 停止展示回调
+/// @param monitor 聚焦检测器
+/// @param container 停止展示的回调
+/// @param indexPath 视图位置
 - (void)monitor:(FVFocusMonitor *)monitor containerDidEndDisplay:(__kindof UIView *)container indexPath:(NSIndexPath *)indexPath;
 
 @end
@@ -76,9 +61,9 @@ typedef void (^FVAppointCompletionBlock)(__kindof UIView *_Nullable oldView, __k
 /// delegate
 @property (nonatomic, weak, nullable) id<FVFocusMonitorDelegate> delegate;
 /// 当前聚焦的视图，为 `UIView<FVPlayerContainer> *` or `UIView<FVContainerSupplier> *` 其中一种
-@property (nonatomic, readonly, nullable) __kindof UIView *focusContainer;
+@property (nonatomic, readonly, nullable) __kindof UIView *focus;
 /// 聚焦失败的视图，比如滑动停止时，找到非自动播放的容器
-@property (nonatomic, readonly, nullable) __kindof UIView *abortContainer;
+@property (nonatomic, readonly, nullable) __kindof UIView *abort;
 /// 聚焦视图对应的 indexPath 信息
 @property (nonatomic, readonly, nullable) NSIndexPath *focusIndexPath;
 /// 聚焦视图对应的 indexPath 信息
@@ -99,7 +84,7 @@ typedef void (^FVAppointCompletionBlock)(__kindof UIView *_Nullable oldView, __k
 /**
  是否应该切换到新聚焦视图
  
- @param focusContainer 已经聚焦的视图
+ @param focus 已经聚焦的视图
  @param target 新算出来的聚焦视图
  @return NO：不切换到target   YES：切换到target
  

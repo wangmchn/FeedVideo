@@ -9,9 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FVPlayerHandlerProtocol.h"
 
-/**
- 播放器管理模块
- */
+/// 播放器管理模块
 @interface FVPlayerHandler : NSObject <FVPlayerHandlerProtocol>
 
 @end
