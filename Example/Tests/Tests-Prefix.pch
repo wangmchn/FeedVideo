@@ -3,5 +3,7 @@
 #ifdef __OBJC__
 
   @import FBSnapshotTestCase;
+  @import FeedVideo;
+  @import OCMock;
 
 #endif

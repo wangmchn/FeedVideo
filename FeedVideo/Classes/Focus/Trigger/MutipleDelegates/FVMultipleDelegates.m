@@ -96,17 +96,6 @@ static inline void fv_enumerateUsingBlock(NSHashTable *delegates, void (^block)(
     });
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ([self.mainTarget respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [(id<UIScrollViewDelegate>)self.mainTarget scrollViewDidScroll:scrollView];
-    }
-    fv_enumerateUsingBlock(self.delegates, ^(id<UIScrollViewDelegate> delegate, BOOL * _Nonnull stop) {
-        if ([delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-            [delegate scrollViewDidScroll:scrollView];
-        }
-    });
-}
-
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
     if ([self.mainTarget respondsToSelector:@selector(tableView:willDisplayHeaderView:forSection:)]) {
