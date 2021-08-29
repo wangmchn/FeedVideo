@@ -37,6 +37,25 @@
     };
 }
 
+- (BOOL)isEqualToNode:(FVIndexPathNode *)node {
+    if ([self isEqual:node]) {
+        return YES;
+    }
+    FVIndexPathNode *left = self;
+    FVIndexPathNode *right = node;
+    while (left.indexPath && right.indexPath) {
+        if (![left.indexPath isEqual:right.indexPath]) {
+            return NO;
+        }
+        left = left.child;
+        right = right.child;
+    }
+    if (!left && !right) {
+        return YES;
+    }
+    return [left isEqual:right];
+}
+
 - (NSString *)description {
     NSMutableString *description = @"root".mutableCopy;
     FVIndexPathNode *cursor = self;

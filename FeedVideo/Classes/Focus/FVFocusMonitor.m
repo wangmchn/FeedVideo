@@ -407,7 +407,7 @@ static NSString *const kAppointKey = @"kAppointKey";
     self.candidate = nil;
     
     __weak typeof(self) weak_self = self;
-    void (^notifyBlock)(FVFocusMonitor *_Nullable) = ^void (FVFocusMonitor *_Nullable monitor) {
+    void (^notifyFocus)(void) = ^void (void) {
         __strong typeof(weak_self) strong_self = weak_self;
         CHECK_DISABLE_IN_BLOCK_AND_RETURN
         
@@ -424,7 +424,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         }
     };
     
-    void (^notifyNotAuto)(void) = ^void (void) {
+    void (^notifyAbort)(void) = ^void (void) {
         __strong typeof(weak_self) strong_self = weak_self;
         CHECK_DISABLE_IN_BLOCK_AND_RETURN
         strong_self.abort = target;
@@ -463,17 +463,17 @@ static NSString *const kAppointKey = @"kAppointKey";
                 return;
             }
             if (findNotAuto && !isAppoint) {
-                notifyNotAuto();
+                notifyAbort();
             } else {
-                notifyBlock(candidate.monitor);
+                notifyFocus();
             }
             strong_self.candidate = nil;
         } makeFocus:makeFocus];
     } else {
         if (!fv_isAutoPlay(target) && !isAppoint) {
-            notifyNotAuto();
+            notifyAbort();
         } else {
-            notifyBlock(nil);
+            notifyFocus();
         }
     }
 }

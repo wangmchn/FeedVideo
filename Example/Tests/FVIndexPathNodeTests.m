@@ -39,4 +39,43 @@
     XCTAssertNil(node.child.child.child);
 }
 
+- (void)testIndexPathNodeEqual {
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        FVIndexPathNode *node2 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        XCTAssert([node1 isEqualToNode:node2]);
+    }
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        XCTAssert([node1 isEqualToNode:node1]);
+    }
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]).fv_child([NSIndexPath indexPathForRow:9 inSection:0]);
+        FVIndexPathNode *node2 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]).fv_child([NSIndexPath indexPathForRow:9 inSection:0]);
+        XCTAssert([node1 isEqualToNode:node2]);
+    }
+}
+
+- (void)testIndexPathNodeNotEqual {
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        XCTAssert(![node1 isEqualToNode:nil]);
+    }
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        FVIndexPathNode *node2 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:2 inSection:0]);
+        XCTAssert(![node1 isEqualToNode:node2]);
+    }
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        FVIndexPathNode *node2 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:1 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        XCTAssert(![node1 isEqualToNode:node2]);
+    }
+    {
+        FVIndexPathNode *node1 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]).fv_child([NSIndexPath indexPathForRow:1 inSection:0]);
+        FVIndexPathNode *node2 = FVIndexPathNode.fv_root([NSIndexPath indexPathForItem:0 inSection:0]);
+        XCTAssert(![node1 isEqualToNode:node2]);
+    }
+}
+
 @end

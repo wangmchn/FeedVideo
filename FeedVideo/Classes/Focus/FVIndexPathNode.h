@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) FVIndexPathNode *child;
 @property (nonatomic, readonly, class) FVIndexPathNode *(^fv_root)(NSIndexPath *indexPath);
 @property (nonatomic, readonly) FVIndexPathNode *(^fv_child)(NSIndexPath *indexPath);
+
+- (BOOL)isEqualToNode:(nullable FVIndexPathNode *)node;
+
 @end
 
 NS_ASSUME_NONNULL_END
