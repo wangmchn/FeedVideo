@@ -152,6 +152,9 @@ NS_INLINE void fv_preload(id<FVPlayerProtocol> player, id data) {
     
     id<FVPlayerProtocol> attachPlayer = appointPlayer;
     if (!attachPlayer) {
+        attachPlayer = fv_getPlayer(playerContainer);
+    }
+    if (!attachPlayer) {
         attachPlayer = [self getPlayerWithVideoInfo:playerContainer.fv_videoInfo];
     }
     

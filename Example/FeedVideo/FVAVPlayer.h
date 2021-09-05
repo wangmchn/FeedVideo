@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface FVAVPlayer : UIView
-
+@property (nonatomic, readonly) NSString *vid;
 @property (nonatomic, assign) BOOL preloading;
 
 - (void)addDelegate:(id<FVAVPlayerDelegate>)delegate;

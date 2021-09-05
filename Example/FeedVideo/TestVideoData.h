@@ -14,7 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shareInstance;
 
-@property (nonatomic, readonly) NSString *randomURL;
+// NSString or NSArray
+- (NSArray *)buildNestingDemoVidList;
+
+- (NSArray<NSString *> *)buildTikTokVidListWithInitialVid:(NSString *)vid;
 
 @end
 

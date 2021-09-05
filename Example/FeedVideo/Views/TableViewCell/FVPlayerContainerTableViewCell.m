@@ -22,6 +22,7 @@
         _vidLabel = [[UILabel alloc] init];
         _vidLabel.backgroundColor = [UIColor redColor];
         _vidLabel.textColor = [UIColor whiteColor];
+        _vidLabel.layer.zPosition = 10;
         [self.contentView addSubview:_vidLabel];
     }
     return _vidLabel;
@@ -31,7 +32,7 @@
     [super layoutSubviews];
     
     [_vidLabel sizeToFit];
-    _vidLabel.frame = CGRectMake(10, 20, _vidLabel.frame.size.width, _vidLabel.frame.size.height);
+    _vidLabel.frame = CGRectMake(10, 44, _vidLabel.frame.size.width, _vidLabel.frame.size.height);
 }
 
 - (void)setStrURL:(NSString *)strURL {

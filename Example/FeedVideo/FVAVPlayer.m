@@ -8,6 +8,12 @@
 
 #import "FVAVPlayer.h"
 #import <AVFoundation/AVFoundation.h>
+
+NS_INLINE NSURL *FVFileURLWithName(NSString *name) {
+    NSString *strURL = [[NSBundle mainBundle] pathForResource:name ofType:nil];
+    return [NSURL fileURLWithPath:strURL];
+}
+
 @import KVOController;
 
 @interface FVAVPlayer ()
@@ -46,9 +52,9 @@
     return self;
 }
 
-- (void)loadURL:(NSString *)strURL {
+- (void)loadURL:(NSURL *)URL {
     [self.KVOController unobserveAll];
-    self.playerItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:strURL]];
+    self.playerItem = [AVPlayerItem playerItemWithURL:URL];
     if (self.player) {
         [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
     } else {
@@ -67,7 +73,7 @@
     [self.KVOController observe:self.playerItem keyPath:@"status" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         __strong typeof(weak_self) strong_self = weak_self;
         AVPlayerItemStatus status = [change[NSKeyValueChangeNewKey] intValue];
-        NSLog(@"player status change: %@", @(status));
+        NSLog(@"player status change: %@ %@", @(status), object);
         switch (status) {
             case AVPlayerItemStatusFailed:
                 [self.indicatorView stopAnimating];
@@ -99,6 +105,10 @@
     }];
     
     !self.completionBlock ?: self.completionBlock(self);
+}
+
+- (NSString *)vid {
+    return ((AVURLAsset *)self.playerItem.asset).URL.lastPathComponent;
 }
 
 - (void)layoutSubviews {
@@ -144,8 +154,7 @@
     if (![data isKindOfClass:[NSString class]]) {
         return NO;
     }
-    AVURLAsset *asset = [self.playerItem.asset isKindOfClass:AVURLAsset.class] ? (AVURLAsset *)self.playerItem.asset : nil;
-    return [asset.URL.absoluteString isEqualToString:data];
+    return [self.vid isEqualToString:data];
 }
 
 - (void)fv_setFinishBlock:(void (^)(id<FVPlayerProtocol> _Nonnull))fv_finishBlock {
@@ -161,7 +170,7 @@
         return;
     }
     self.preloading = NO;
-    [self loadURL:data];
+    [self loadURL:FVFileURLWithName(data)];
 }
 
 - (void)fv_pause {
@@ -169,6 +178,7 @@
 }
 
 - (void)fv_play {
+    self.preloading = NO;
     [self.player play];
 }
 
@@ -177,7 +187,7 @@
         return;
     }
     self.preloading = YES;
-    [self loadURL:data];
+    [self loadURL:FVFileURLWithName(data)];
 }
 
 - (void)fv_replay {

@@ -27,25 +27,37 @@
     self = [super init];
     if (self) {
         self.testVideoInfoArray = @[
-            @"https://v-cdn.zjol.com.cn/280443.mp4",
-            @"https://v-cdn.zjol.com.cn/276982.mp4",
-            @"https://v-cdn.zjol.com.cn/276984.mp4",
-            @"https://v-cdn.zjol.com.cn/276985.mp4",
-            @"https://v-cdn.zjol.com.cn/277004.mp4",
+            @"coldlikeadog.mp4",
+            @"helicopter.mp4",
+            @"idleruby.mp4",
+            @"kangaroo.mp4",
+            @"miao.mp4",
+            @"sunshine.mp4",
+            @"swim.mp4",
+            @"taigu.mp4",
+            @"tina.mp4"
         ];
     }
     return self;
 }
 
-- (NSString *)randomURL {
-    if (self.testVideoInfoArray.count < 0) {
-        return nil;
+- (NSArray *)buildNestingDemoVidList {
+    NSMutableArray *result = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        [result addObject:self.testVideoInfoArray.copy];
+        [result addObjectsFromArray:self.testVideoInfoArray];
     }
-    NSInteger random = arc4random() % (self.testVideoInfoArray.count);
-    if (random >= 0 && random < self.testVideoInfoArray.count) {
-        return [self.testVideoInfoArray objectAtIndex:random];
+    return result;
+}
+
+- (NSArray<NSString *> *)buildTikTokVidListWithInitialVid:(NSString *)vid {
+    NSMutableArray *result = self.testVideoInfoArray.mutableCopy;
+    [result removeObject:vid];
+    [result insertObject:vid atIndex:0];
+    for (int i = 0; i < 9; i++) {
+        [result addObjectsFromArray:self.testVideoInfoArray];
     }
-    return nil;
+    return result;
 }
 
 @end

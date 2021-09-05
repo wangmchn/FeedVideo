@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FVAVPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FVTikTokViewController : UIViewController
+
+- (instancetype)initWithPlayer:(FVAVPlayer *)player;
 
 @end
 

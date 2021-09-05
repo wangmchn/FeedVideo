@@ -15,7 +15,6 @@
 
 @interface FVMonitorSupplierTableViewCell () <FVContainerSupplier, UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *collectionView;
-@property (nonatomic, strong) NSMutableArray *dataList;
 @end
 
 @implementation FVMonitorSupplierTableViewCell
@@ -24,11 +23,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         [self setUpUI];
-        
-        self.dataList = [[NSMutableArray alloc] init];
-        for (int i = 0; i < 10; i++) {
-            [self.dataList addObject:[TestVideoData shareInstance].randomURL];
-        }
     }
     return self;
 }

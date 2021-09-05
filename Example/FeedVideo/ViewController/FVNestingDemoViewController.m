@@ -13,6 +13,7 @@
 #import "FVPreloadManager.h"
 #import "TestVideoData.h"
 #import "FVAVPlayer.h"
+#import "FVTikTokViewController.h"
 @import FeedVideo;
 
 #define FVMonitorSupplierIdentifier NSStringFromClass(FVPlayerContainerTableViewCell.class)
@@ -20,7 +21,7 @@
 @interface FVNestingDemoViewController () <UITableViewDelegate, UITableViewDataSource, FVPlayerProviderProtocol, FVContainerSupplier, FVFeedVideoManagerDelegate>
 @property (nonatomic, strong) FVFeedVideoManager *playerManager;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSMutableArray *dataList;
+@property (nonatomic, strong) NSArray *dataList;
 @end
 
 @implementation FVNestingDemoViewController
@@ -30,15 +31,7 @@
     // Do any additional setup after loading the view.
     [self setUpUI];
     [self setUpPlayerManager];
-    
-    [FVReusePool sharedInstance].playerProvider = ^id _Nonnull(NSString * _Nonnull identifier, NSString * _Nonnull type) {
-        return [[FVAVPlayer alloc] init];
-    };
-    
-    self.dataList = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 100; i++) {
-        [self.dataList addObject:[TestVideoData shareInstance].randomURL];
-    }
+    self.dataList = [[TestVideoData shareInstance] buildNestingDemoVidList];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -66,8 +59,27 @@
     self.playerManager.playerProvider = self;
     self.playerManager.preloadMgr = [FVPreloadManager shareInstance];
     self.playerManager.delegate = self;
+    [FVReusePool sharedInstance].playerProvider = ^id _Nonnull(NSString * _Nonnull identifier, NSString * _Nonnull type) {
+        return [[FVAVPlayer alloc] init];
+    };
 }
 
+- (NSString *)vidAtIndex:(NSInteger)index offset:(NSInteger)offset {
+    NSMutableArray *list = self.dataList.mutableCopy;
+    for (NSInteger i = index + 1; i < offset + index; i++) {
+        if (i >= list.count) {
+            break;
+        }
+        id value = list[i];
+        if ([value isKindOfClass:[NSArray class]]) {
+            [list addObjectsFromArray:value];
+        }
+    }
+    if (index + offset >= list.count) {
+        return nil;
+    }
+    return list[index + offset];
+}
 
 #pragma mark - FVMonitorSupplierProtocol
 - (FVFocusMonitor *)fv_focusMonitor {
@@ -82,44 +94,33 @@
 }
 
 - (FVIndexPathNode *)fv_nextNodeForPlayingView:(__kindof UIView *)view indexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < 99) {
+    if (indexPath.row + 1 >= self.dataList.count) {
+        return nil;
+    }
+    id nextValue = self.dataList[indexPath.row + 1];
+    if ([nextValue isKindOfClass:NSString.class]) {
         return FVIndexPathNode.fv_root([NSIndexPath indexPathForRow:indexPath.row + 1 inSection:0]);
     }
-    return nil;
+    return FVIndexPathNode.fv_root([NSIndexPath indexPathForRow:indexPath.row + 1 inSection:0]).fv_child([NSIndexPath indexPathForRow:0 inSection:0]);
 }
 
 - (NSArray *)fv_dataPreloadListWithFocusView:(UIView *)focusView indexPath:(NSIndexPath *)indexPath {
-    if (!indexPath) {
-        return nil;
-    }
-    NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-    if (indexPath.row + 1 < self.dataList.count) {
-        [resultArray addObject:[self.dataList objectAtIndex:indexPath.row + 1]];
-    }
-    
-    if (indexPath.row + 2 < self.dataList.count) {
-        [resultArray addObject:[self.dataList objectAtIndex:indexPath.row + 2]];
-    }
-    
-    if (indexPath.row - 1 >= 0 && indexPath.row - 1 < self.dataList.count) {
-        [resultArray addObject:[self.dataList objectAtIndex:indexPath.row - 1]];
-    }
-    return [resultArray copy];
+    return [self buildPreloadListAtIndexPath:indexPath];
 }
 
 - (NSArray *)fv_playerPreloadListWithFocusView:(UIView *)focusView indexPath:(NSIndexPath *)indexPath {
+    return [self buildPreloadListAtIndexPath:indexPath];
+}
+
+- (NSArray *)buildPreloadListAtIndexPath:(NSIndexPath *)indexPath {
     if (!indexPath) {
         return nil;
     }
-    NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-    if (indexPath.row - 1 >= 0 && indexPath.row - 1 < self.dataList.count) {
-        [resultArray addObject:[self.dataList objectAtIndex:indexPath.row - 1]];
+    NSString *nextVid = [self vidAtIndex:indexPath.row offset:1];
+    if (nextVid.length) {
+        return @[nextVid];
     }
-    
-    if (indexPath.row + 1 < self.dataList.count) {
-        [resultArray addObject:[self.dataList objectAtIndex:indexPath.row + 1]];
-    }
-    return [resultArray copy];
+    return nil;
 }
 
 #pragma mark - FVPlayerProviderProtocol
@@ -137,24 +138,23 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row % 4 == 1) {
+    id value = self.dataList[indexPath.row];
+    if ([value isKindOfClass:NSArray.class]) {
         FVMonitorSupplierTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FVMonitorSupplierIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.dataList = value;
         __weak typeof(self) weak_self = self;
         cell.selectInnerBlock = ^(NSIndexPath * _Nonnull innerIndexPath) {
-            [weak_self.playerManager.monitor appointNode:FVIndexPathNode.fv_root(indexPath).fv_child(innerIndexPath) makeFocus:YES context:nil];
+            FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath).fv_child(innerIndexPath);
+            [weak_self didSelectNode:node];
         };
         return cell;
-    } else {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FVPlayerContainerIdentifier];
-        cell.textLabel.text = FVDebugConfiguration.uniqueIdentifier;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if (indexPath.row < self.dataList.count) {
-            NSString *strURL = [self.dataList objectAtIndex:indexPath.row];
-            ((FVPlayerContainerTableViewCell *)cell).strURL = strURL;
-        }
-        return cell;
     }
+    FVPlayerContainerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FVPlayerContainerIdentifier];
+    cell.textLabel.text = FVDebugConfiguration.uniqueIdentifier;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.strURL = value;
+    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -163,7 +163,19 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // 点击播放的场景
-    [self.playerManager.monitor appointNode:FVIndexPathNode.fv_root(indexPath) makeFocus:YES context:nil];
+    FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath);
+    [self didSelectNode:node];
+}
+
+- (void)didSelectNode:(FVIndexPathNode *)node {
+    if ([node isEqualToNode:self.playerManager.monitor.focusIndexPathNode]) {
+        FVAVPlayer *player = (FVAVPlayer *)self.playerManager.focusPlayer;
+        [self.playerManager removePlayer:player pause:NO context:nil];
+        FVTikTokViewController *tikTokViewController = [[FVTikTokViewController alloc] initWithPlayer:player];
+        [self.navigationController pushViewController:tikTokViewController animated:YES];
+    } else {
+        [self.playerManager.monitor appointNode:node makeFocus:YES context:nil];
+    }
 }
 
 #pragma mark - FVContainerSupplierProtocol
