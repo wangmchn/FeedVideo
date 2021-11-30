@@ -18,11 +18,11 @@
 #define CHECK_DISABLE_AND_RETURN if (self.disable) { return; }
 #define CHECK_DISABLE_IN_BLOCK_AND_RETURN if (strong_self.disable) { return; }
 
-static inline void notify(void (^block)(void)) {
+NS_INLINE void notify(void (^block)(void)) {
+    // 为什么异步执行回调呢，因为找到当前聚焦视图的时候是在 kCFRunLoopBeforeWaiting
+    // 这个时候向外抛事件更新 UI 时是不可靠的，因为 UIKit 更新视图依赖了 runloop，我们的 observer 优先级比 UIKit 更低，这个时候已经更新结束，因此做视图添加更新并不靠谱
+    // 统一切到下一个 runloop 进行事件外抛
     dispatch_async(dispatch_get_main_queue(), ^{
-        // 为什么异步执行回调呢，因为找到当前聚焦视图的时候是在 kCFRunLoopBeforeWaiting
-        // 这个时候向外抛事件处理 UI 时是不可靠的，因为 UIKit 依赖 runloop，在 kCFRunLoopBeforeWaiting 时去做视图添加并不靠谱
-        // 统一切到下一个 runloop 进行事件外抛
         block();
     });
 }
@@ -34,8 +34,8 @@ static NSString *const kAppointKey = @"kAppointKey";
 @property (nonatomic, assign) NSUInteger focusCursor;
 @property (nonatomic, readwrite, nullable) __kindof UIView *focus;
 @property (nonatomic, readwrite, nullable) __kindof UIView *abort;
-@property (nonatomic, strong) FVRunLoopObserver *observer;
-@property (nonatomic, strong) FVRunLoopObserver *endDisplayingObserver;
+@property (nonatomic, strong) FVRunLoopObserver *defaultModeObserver;
+@property (nonatomic, strong) FVRunLoopObserver *trackingModeObserver;
 @property (nonatomic, strong) FVSupplierCandidate *candidate;
 /// 记录下下一步操作, 因为 makeFocus 不是同步完成的
 @property (nonatomic, copy) void (^triggerBlock)(void);
@@ -126,8 +126,8 @@ static NSString *const kAppointKey = @"kAppointKey";
         _trigger = trigger;
         _trigger.delegate = self;
         _calculator = calculator;
-        _observer = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder mode:kCFRunLoopDefaultMode];
-        _endDisplayingObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder - 1 mode:kCFRunLoopCommonModes];
+        _defaultModeObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder mode:kCFRunLoopDefaultMode];
+        _trackingModeObserver = [[FVRunLoopObserver alloc] initWithActivity:kCFRunLoopBeforeWaiting order:FVCalculationOrder - 1 mode:kCFRunLoopCommonModes];
         [_calculator.visibleContainers enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             fv_setParentMonitor(obj, self);
             obj._fv_isDisplay = YES;
@@ -250,45 +250,54 @@ static NSString *const kAppointKey = @"kAppointKey";
         // 庆幸的是，该不可见再可见的逻辑会在一次 runloop 内执行完成
         // 我们延迟下不可见的回调逻辑，在下一个 loop 再做检查
         __weak typeof(self) weak_self = self;
-        [self.endDisplayingObserver observeWithKey:[NSUUID UUID].UUIDString repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // dispatch_async 并非严格的下一个 runloop
-                __weak typeof(weak_self) strong_self = weak_self;
-                if (!strong_self || strong_self.disable) {
-                    return;
-                }
-                view._fv_willEndDisplaying = NO;
-                if (!view.window || !view._fv_isDisplay) {
-                    // view invisible or not focus anymore.
-                    // just call end displaying.
-                    if (view == strong_self.focus) {
+        [self.trackingModeObserver observeWithKey:[NSUUID UUID].UUIDString repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
+            __weak typeof(weak_self) strong_self = weak_self;
+            if (!strong_self) {
+                return;
+            }
+            view._fv_willEndDisplaying = NO;
+            if (!view.window || !view._fv_isDisplay) {
+                // view invisible or not focus anymore.
+                // just call end displaying.
+                if (view == strong_self.focus) {
+                    notify(^{
                         [strong_self clearFocusContainer];
-                    }
-                    [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
-                    return;
+                        [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
+                    });
+                } else {
+                    notify(^{
+                        [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
+                    });
                 }
-                if (view != strong_self.focus) {
+                return;
+            }
+            if (view != strong_self.focus) {
+                notify(^{
                     [strong_self.delegate monitor:strong_self containerDidEndDisplay:view indexPath:indexPath];
                     [strong_self.delegate monitor:strong_self containerWillDisplay:view indexPath:indexPath];
-                    return;
-                }
-                if (view == strong_self.focus && strong_self.focusCursor != focusCursor) {
-                    // view == self.focusContainer && self.cursor != cursor && displaying
-                    // 说明新的聚焦操作已经进来了，什么都不需要处理
-                    return;
-                }
-                UIView<FVPlayerContainer> *container = strong_self.tail.focus;
-                if (![container conformsToProtocol:@protocol(FVPlayerContainer)]) {
-                    // shouldn't come here, but anyway.
+                });
+                return;
+            }
+            if (view == strong_self.focus && strong_self.focusCursor != focusCursor) {
+                // view == self.focusContainer && self.cursor != cursor && displaying
+                // 说明新的聚焦操作已经进来了，什么都不需要处理
+                return;
+            }
+            UIView<FVPlayerContainer> *container = strong_self.tail.focus;
+            if (![container conformsToProtocol:@protocol(FVPlayerContainer)]) {
+                // shouldn't come here, but anyway.
+                notify(^{
                     [strong_self clearFocusContainer];
-                    return;
-                }
-                NSString *currentIdentifier = container.fv_uniqueIdentifier;
-                if (![currentIdentifier isEqualToString:lastIdentifier]) {
-                    // 当前 cell 还在展示，但是 identifier 已经修改了，说明当前 cell 发生了数据更新，清除当前聚焦
+                });
+                return;
+            }
+            NSString *currentIdentifier = container.fv_uniqueIdentifier;
+            if (![currentIdentifier isEqualToString:lastIdentifier]) {
+                // 当前 cell 还在展示，但是 identifier 已经修改了，说明当前 cell 发生了数据更新，清除当前聚焦
+                notify(^{
                     [strong_self clearFocusContainer];
-                }
-            });
+                });
+            }
         }];
     } else {
         CHECK_DISABLE_AND_RETURN
@@ -331,7 +340,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         return;
     }
     __weak typeof(self) weak_self = self;
-    [self.observer observeWithKey:kTriggerKey repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
+    [self.defaultModeObserver observeWithKey:kTriggerKey repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
         __strong typeof(weak_self) strong_self = weak_self;
         if (strong_self.disable) {
             return;
@@ -358,7 +367,7 @@ static NSString *const kAppointKey = @"kAppointKey";
     __weak typeof(self) weak_self = self;
     self.triggerBlock = ^{
         __weak typeof(weak_self) strong_self = weak_self;
-        [strong_self.observer observeWithKey:kAppointKey repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
+        [strong_self.defaultModeObserver observeWithKey:kAppointKey repeats:NO usingBlock:^(CFRunLoopObserverRef  _Nonnull observer, CFRunLoopActivity activity) {
             UIView *target = [strong_self.calculator containerAtIndexPath:node.indexPath];
             // 如果这里还找不到指定的视图呢？
             if (target) {
