@@ -47,6 +47,7 @@
 - (void)fv_tableView:(UITableView *)tableView scrollToRowAtIndexPath:(nonnull NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated {
     // 这里只需要增对无动画的去响应就可以了，因为 animated 会触发 -scrollViewDidEndScrollingAnimation: 回调
     if (!animated) {
+        [tableView layoutIfNeeded];
         [self trigger];
     }
 }
@@ -55,6 +56,7 @@
     // 这里只需要增对无动画的去响应就可以了，因为 animated 会触发 -scrollViewDidEndScrollingAnimation: 回调
     // 或者 contentOffset 相等
     if (!animated || VFPPointEqualToPoint(contentOffset, tableView.contentOffset)) {
+        [tableView layoutIfNeeded];
         [self trigger];
     }
 }

@@ -54,6 +54,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (VFPPointEqualToPoint(contentOffset, collectionView.contentOffset)) {
                 // 有动画可能没发生滚动，不会触发回调，这里间隔 0.1s 检查下 contentOffset 吧
+                [collectionView layoutIfNeeded];
                 [self trigger];
             }
         });
@@ -64,6 +65,7 @@
     // 这里只需要增对无动画的去响应就可以了，因为 animated 会触发 -scrollViewDidEndScrollingAnimation: 回调
     // 或者 contentOffset 相等
     if (!animated || VFPPointEqualToPoint(contentOffset, collectionView.contentOffset)) {
+        [collectionView layoutIfNeeded];
         [self trigger];
     }
 }

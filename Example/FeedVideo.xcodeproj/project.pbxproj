@@ -114,7 +114,7 @@
 		CFD83F0926BAA1BE00A998C5 /* FVPreloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FVPreloadManager.m; sourceTree = "<group>"; };
 		CFD83F0A26BAA1BE00A998C5 /* FVPreloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FVPreloadManager.h; sourceTree = "<group>"; };
 		E754EA819E6BD97F313ABEDA /* Pods-FeedVideo_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FeedVideo_Example.release.xcconfig"; path = "Target Support Files/Pods-FeedVideo_Example/Pods-FeedVideo_Example.release.xcconfig"; sourceTree = "<group>"; };
-		F120767E364B171C42B4D220 /* FeedVideo.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FeedVideo.podspec; path = ../FeedVideo.podspec; sourceTree = "<group>"; };
+		F120767E364B171C42B4D220 /* FeedVideo.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FeedVideo.podspec; path = ../FeedVideo.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		FF5B357B4420644EE19A9558 /* Pods-FeedVideo_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FeedVideo_Tests.release.xcconfig"; path = "Target Support Files/Pods-FeedVideo_Tests/Pods-FeedVideo_Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
