@@ -27,6 +27,10 @@
     return NO;
 }
 
+- (NSUInteger)hash {
+    return self.key.hash | self.hash;
+}
+
 @end
 
 @interface FVRunLoopObserver ()
