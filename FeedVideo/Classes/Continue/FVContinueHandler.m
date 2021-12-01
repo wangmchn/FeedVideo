@@ -77,7 +77,7 @@
         if (curser != self.cursor) {
             return;
         }
-        [monitor appointNode:node afterFocus:YES context:fv_context(FVTriggerTypeContinue, nil)];
+        [monitor appointNode:node focusType:FVFocusTypeAfterScroll context:fv_context(FVTriggerTypeContinue, nil)];
     });
     return YES;
 }

@@ -16,6 +16,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, FVFocusType) {
+    /// 不发生滚动
+    FVFocusTypeNoScroll,
+    /// 聚焦同时滚动
+    FVFocusTypeScroll,
+    /// 先滚动到聚焦位置，再触发聚集逻辑
+    FVFocusTypeAfterScroll,
+};
+
 @protocol FVFocusMonitorDelegate <NSObject>
 @required
 
@@ -125,22 +134,15 @@ typedef void (^FVAppointCompletionBlock)(__kindof UIView *_Nullable oldView, __k
 /**
  指定对应位置进行播放，可以通过 node.child 来指定嵌套多层的指定播放
  @param node 位置节点
- @param makeFocus 是否需要调用聚焦
+ @param focusType 聚焦方式，是否滚动聚集等，详见 FVFocusType
  @param context 上下文信息，最终会透传给 container
  */
-- (void)appointNode:(FVIndexPathNode *)node makeFocus:(BOOL)makeFocus context:(nullable FVContext *)context;
-
-/**
- 聚焦完成再进行指定位置的播放
- @param node 位置节点
- @param afterFocus 是否在聚焦之后才添加播放器
- @param context 上下文信息，最终会透传给 container
- */
-- (void)appointNode:(FVIndexPathNode *)node afterFocus:(BOOL)afterFocus context:(nullable FVContext *)context;
+- (void)appointNode:(FVIndexPathNode *)node focusType:(FVFocusType)focusType context:(nullable FVContext *)context;
 
 /**
  指定对应位置进行播放，可以通过 node.child 来指定嵌套多层的指定播放
  @param node 位置节点
+ @param focusType 聚焦方式，是否滚动聚集等，详见 FVFocusType
  @param completionBlock 完成回调，如未设置 block 则会通过 delegate 方法回调
  @param context 上下文信息，最终会透传给 container
  @discussion 例如需要指定第一个位置中的第二个播放，可以使用如下的调用方式：
@@ -149,7 +151,7 @@ typedef void (^FVAppointCompletionBlock)(__kindof UIView *_Nullable oldView, __k
  NSIndexPath *child = [NSIndexPath indexPathForRow:1 inSection:0];
  [monitor appointNode:FVIndexPathNode.fv_root(root).fv_child(child)];
  */
-- (void)appointNode:(FVIndexPathNode *)node makeFocus:(BOOL)makeFocus context:(nullable FVContext *)context usingBlock:(nullable FVAppointCompletionBlock)completionBlock;
+- (void)appointNode:(FVIndexPathNode *)node focusType:(FVFocusType)focusType context:(nullable FVContext *)context usingBlock:(nullable FVAppointCompletionBlock)completionBlock;
 
 /**
  重新触发一次计算

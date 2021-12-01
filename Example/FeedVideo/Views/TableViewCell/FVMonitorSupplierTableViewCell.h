@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FVMonitorSupplierTableViewCell : UITableViewCell
-@property (nonatomic, copy) void (^selectInnerBlock)(NSIndexPath *indexPath);
 @property (nonatomic, strong) NSMutableArray *dataList;
 @end
 

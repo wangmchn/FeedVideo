@@ -78,10 +78,6 @@
     return cell;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    !self.selectInnerBlock ?: self.selectInnerBlock(indexPath);
-}
-
 #pragma mark - FVMonitorSupplierProtocol
 - (FVFocusMonitor *)fv_focusMonitor {
     return [[FVFocusMonitor alloc] initWithCollectionView:self.collectionView];

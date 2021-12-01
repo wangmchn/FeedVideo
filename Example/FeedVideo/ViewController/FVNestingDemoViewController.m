@@ -143,11 +143,6 @@
         FVMonitorSupplierTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FVMonitorSupplierIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.dataList = value;
-        __weak typeof(self) weak_self = self;
-        cell.selectInnerBlock = ^(NSIndexPath * _Nonnull innerIndexPath) {
-            FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath).fv_child(innerIndexPath);
-            [weak_self didSelectNode:node];
-        };
         return cell;
     }
     FVPlayerContainerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FVPlayerContainerIdentifier];
@@ -159,23 +154,6 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return tableView.frame.size.width / 16.0 * 9;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    // 点击播放的场景
-    FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath);
-    [self didSelectNode:node];
-}
-
-- (void)didSelectNode:(FVIndexPathNode *)node {
-    if ([node isEqualToNode:self.playerManager.monitor.focusIndexPathNode]) {
-        FVAVPlayer *player = (FVAVPlayer *)self.playerManager.focusPlayer;
-        [self.playerManager removePlayer:player pause:NO context:nil];
-        FVTikTokViewController *tikTokViewController = [[FVTikTokViewController alloc] initWithPlayer:player];
-        [self.navigationController pushViewController:tikTokViewController animated:YES];
-    } else {
-        [self.playerManager.monitor appointNode:node makeFocus:YES context:nil];
-    }
 }
 
 #pragma mark - FVContainerSupplierProtocol

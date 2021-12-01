@@ -27,11 +27,11 @@
     return self;
 }
 
-- (void)prepareUsingBlock:(void (^)(FVSupplierCandidate * _Nonnull, BOOL))completionBlock makeFocus:(BOOL)makeFocus {
+- (void)focusWithType:(FVFocusType)focusType usingBlock:(void (^)(FVSupplierCandidate * _Nonnull, BOOL))completionBlock {
     _completionBlock = completionBlock;
     FVIndexPathNode *child = self.node.child;
     if (child) {
-        [self.monitor appointNode:child makeFocus:makeFocus context:nil];
+        [self.monitor appointNode:child focusType:focusType context:nil];
     } else {
         [self.monitor recalculate];
     }

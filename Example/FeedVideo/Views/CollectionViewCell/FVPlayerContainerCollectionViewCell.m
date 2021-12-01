@@ -25,8 +25,13 @@
         self.titlelabel = [[UILabel alloc] initWithFrame:CGRectZero];
         self.titlelabel.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:self.titlelabel];
+        [self.contentView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selfTapped:)]];
     }
     return self;
+}
+
+- (void)selfTapped:(id)sender {
+    [self fv_focus];
 }
 
 - (UILabel *)vidLabel {

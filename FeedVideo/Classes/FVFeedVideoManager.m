@@ -110,7 +110,7 @@ static inline void fv_enumerateVisibleContainersUsingBlock(id<FVContainerSupplie
 - (void)appointNode:(FVIndexPathNode *)node player:(id<FVPlayerProtocol>)player play:(BOOL)play context:(nullable FVContext *)context {
     fv_setPlayerOwner(player, self, context);
     __weak typeof(self) weak_self = self;
-    [self.monitor appointNode:node makeFocus:NO context:context usingBlock:^(__kindof UIView * _Nullable oldView, __kindof UIView * _Nullable newView) {
+    [self.monitor appointNode:node focusType:FVFocusTypeNoScroll context:context usingBlock:^(__kindof UIView * _Nullable oldView, __kindof UIView * _Nullable newView) {
         __strong typeof(weak_self) strong_self = weak_self;
         if (strong_self.disable) {
             return;

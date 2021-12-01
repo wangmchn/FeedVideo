@@ -46,38 +46,39 @@ static NSString *const kAppointKey = @"kAppointKey";
 #pragma mark - Public
 
 - (void)appointNode:(FVIndexPathNode *)node context:(nullable FVContext *)context {
-    [self appointNode:node makeFocus:NO context:context usingBlock:nil];
+    [self appointNode:node focusType:FVFocusTypeNoScroll context:context usingBlock:nil];
 }
 
-- (void)appointNode:(FVIndexPathNode *)node makeFocus:(BOOL)makeFocus context:(nullable FVContext *)context {
-    [self appointNode:node makeFocus:makeFocus context:context usingBlock:nil];
+- (void)appointNode:(FVIndexPathNode *)node focusType:(FVFocusType)focusType context:(nullable FVContext *)context {
+    [self appointNode:node focusType:focusType context:context usingBlock:nil];
 }
 
-- (void)appointNode:(FVIndexPathNode *)node afterFocus:(BOOL)afterFocus context:(nullable FVContext *)context {
-    if (!node.indexPath) {
-        NSParameterAssert(node.indexPath);
-        return;
-    }
-    [self recordTriggerBlock:node makeFocus:YES context:context completionBlock:nil];
-    [self.calculator makeIndexPathFocus:node.indexPath];
-}
-
-- (void)appointNode:(FVIndexPathNode *)node makeFocus:(BOOL)makeFocus context:(nullable FVContext *)context usingBlock:(nullable FVAppointCompletionBlock)completionBlock {
+- (void)appointNode:(FVIndexPathNode *)node focusType:(FVFocusType)focusType context:(nullable FVContext *)context usingBlock:(nullable FVAppointCompletionBlock)completionBlock {
     if (!node.indexPath) {
         NSParameterAssert(node.indexPath);
         return;
     }
     UIView *container = [self.calculator containerAtIndexPath:node.indexPath];
-    if (container) {
-        // 如果当前视图层级能够找到对应视图，直接返回
-        [self didFindTarget:container node:node isAppoint:YES makeFocus:makeFocus context:context usingBlock:completionBlock];
-        if (makeFocus) {
+    if (!container) {
+        // 如果目标视图没法找到，那么也等滚动之后再做处理
+        focusType = FVFocusTypeAfterScroll;
+    }
+    switch (focusType) {
+        case FVFocusTypeAfterScroll: {
+            // 先记录下 node，等回调再处理
+            [self recordTriggerBlock:node focusType:focusType context:context completionBlock:completionBlock];
             [self.calculator makeIndexPathFocus:node.indexPath];
         }
-    } else {
-        // 如果目标视图没法找到，先记录下 node，等回调再处理
-        [self recordTriggerBlock:node makeFocus:makeFocus context:context completionBlock:completionBlock];
-        [self.calculator makeIndexPathFocus:node.indexPath];
+            break;
+        case FVFocusTypeNoScroll: {
+            [self didFindTarget:container node:node isAppoint:YES focusType:focusType context:context usingBlock:completionBlock];
+        }
+            break;
+        case FVFocusTypeScroll: {
+            [self didFindTarget:container node:node isAppoint:YES focusType:focusType context:context usingBlock:completionBlock];
+            [self.calculator makeIndexPathFocus:node.indexPath];
+        }
+            break;
     }
 }
 
@@ -323,7 +324,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         NSString *oldIdentifier = [fv_findTailContainer(self.focus) _fv_lastIdentifier];
         if ([oldIdentifier isEqualToString:newIdentifier]) {
             // UICollectionView 刷新，可能换一批 cell，如果 id 一致的话自动切换
-            [self didFindTarget:view node:self.focusIndexPathNode isAppoint:YES makeFocus:NO context:nil usingBlock:nil];
+            [self didFindTarget:view node:self.focusIndexPathNode isAppoint:YES focusType:FVFocusTypeNoScroll context:nil usingBlock:nil];
         } else {
             [self.delegate monitor:self containerWillDisplay:view indexPath:indexPath];
         }
@@ -355,14 +356,14 @@ static NSString *const kAppointKey = @"kAppointKey";
                 if (strong_self.shouldChangeFocusContainerToTarget && !strong_self.shouldChangeFocusContainerToTarget(strong_self.focus, targetContainer)) {
                     return;
                 }
-                [strong_self didFindTarget:targetContainer node:FVIndexPathNode.fv_root(indexPath) isAppoint:NO makeFocus:NO context:fv_context(FVTriggerTypeAuto, nil) usingBlock:nil];
+                [strong_self didFindTarget:targetContainer node:FVIndexPathNode.fv_root(indexPath) isAppoint:NO focusType:FVFocusTypeNoScroll context:fv_context(FVTriggerTypeAuto, nil) usingBlock:nil];
             });
         }];
     }];
 }
 
 #pragma mark - Private
-- (void)recordTriggerBlock:(FVIndexPathNode *)node makeFocus:(BOOL)makeFocus context:(nullable FVContext *)context completionBlock:(FVAppointCompletionBlock)completionBlock {
+- (void)recordTriggerBlock:(FVIndexPathNode *)node focusType:(FVFocusType)focusType context:(nullable FVContext *)context completionBlock:(FVAppointCompletionBlock)completionBlock {
     
     __weak typeof(self) weak_self = self;
     self.triggerBlock = ^{
@@ -372,7 +373,7 @@ static NSString *const kAppointKey = @"kAppointKey";
             // 如果这里还找不到指定的视图呢？
             if (target) {
                 notify(^{
-                    [strong_self didFindTarget:target node:node isAppoint:YES makeFocus:makeFocus context:context usingBlock:completionBlock];
+                    [strong_self didFindTarget:target node:node isAppoint:YES focusType:focusType context:context usingBlock:completionBlock];
                 });
             }
         }];
@@ -396,7 +397,7 @@ static NSString *const kAppointKey = @"kAppointKey";
 }
 
 - (void)clearFocusContainer {
-    [self didFindTarget:nil node:nil isAppoint:NO makeFocus:NO context:nil usingBlock:nil];
+    [self didFindTarget:nil node:nil isAppoint:NO focusType:FVFocusTypeNoScroll context:nil usingBlock:nil];
 }
 
 /**
@@ -409,7 +410,7 @@ static NSString *const kAppointKey = @"kAppointKey";
 - (void)didFindTarget:(__kindof UIView *)target
                  node:(FVIndexPathNode *)node
             isAppoint:(BOOL)isAppoint
-            makeFocus:(BOOL)makeFocus
+            focusType:(FVFocusType)focusType
               context:(nullable FVContext *)context
            usingBlock:(FVAppointCompletionBlock)completionBlock {
     
@@ -455,7 +456,7 @@ static NSString *const kAppointKey = @"kAppointKey";
         FVFocusMonitor *monitor = fv_getChildMonitor(target);
         monitor.delegate = self.delegate;
         if (monitor && node.child) {
-            [monitor appointNode:node.child makeFocus:makeFocus context:context];
+            [monitor appointNode:node.child focusType:focusType context:context];
         } else if (monitor) {
             [monitor recalculate];
         } else {
@@ -466,7 +467,7 @@ static NSString *const kAppointKey = @"kAppointKey";
     
     if ([target conformsToProtocol:@protocol(FVContainerSupplier)]) {
         self.candidate = [[FVSupplierCandidate alloc] initWithSupplier:target node:node];
-        [self.candidate prepareUsingBlock:^(FVSupplierCandidate * _Nonnull candidate, BOOL findNotAuto) {
+        [self.candidate focusWithType:focusType usingBlock:^(FVSupplierCandidate * _Nonnull candidate, BOOL findNotAuto) {
             __strong typeof(weak_self) strong_self = weak_self;
             if (strong_self.candidate != candidate) {
                 return;
@@ -477,7 +478,7 @@ static NSString *const kAppointKey = @"kAppointKey";
                 notifyFocus();
             }
             strong_self.candidate = nil;
-        } makeFocus:makeFocus];
+        }];
     } else {
         if (!fv_isAutoPlay(target) && !isAppoint) {
             notifyAbort();

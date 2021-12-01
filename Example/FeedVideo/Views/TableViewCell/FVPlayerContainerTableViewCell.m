@@ -24,8 +24,13 @@
         _vidLabel.textColor = [UIColor whiteColor];
         _vidLabel.layer.zPosition = 10;
         [self.contentView addSubview:_vidLabel];
+        [self.contentView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selfTapped:)]];
     }
     return _vidLabel;
+}
+
+- (void)selfTapped:(id)sender {
+    [self fv_focus];
 }
 
 - (void)layoutSubviews {

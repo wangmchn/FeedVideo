@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FVContainerSupplier.h"
 #import "FVIndexPathNode.h"
+#import "FVFocusMonitor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-- (void)prepareUsingBlock:(void(^)(FVSupplierCandidate *candidate, BOOL findNotAuto))completionBlock makeFocus:(BOOL)makeFocus;
+- (void)focusWithType:(FVFocusType)focusType usingBlock:(void(^)(FVSupplierCandidate *candidate, BOOL findNotAuto))completionBlock;
 
 @end
 
