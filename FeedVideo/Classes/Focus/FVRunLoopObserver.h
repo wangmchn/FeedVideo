@@ -12,23 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define FVCalculationOrder LONG_MAX - 100
 
-static inline void fv_invalid_observer(CFRunLoopObserverRef observer) {
-    if (CFRunLoopObserverIsValid(observer)) {
-        CFRunLoopObserverInvalidate(observer);
-    }
-}
-
-static inline void fv_main_remove_observer(CFRunLoopObserverRef observer, CFRunLoopMode mode) {
-    if (CFRunLoopContainsObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode)) {
-        CFRunLoopRemoveObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode);
-    }
-}
-
-static inline void fv_main_add_observer(CFRunLoopObserverRef observer, CFRunLoopMode mode) {
-    fv_main_remove_observer(observer, mode);
-    CFRunLoopAddObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode);
-}
-
 @interface FVRunLoopObserver : NSObject
 
 - (instancetype)initWithActivity:(CFRunLoopActivity)activity order:(CFIndex)order mode:(CFRunLoopMode)mode NS_DESIGNATED_INITIALIZER;

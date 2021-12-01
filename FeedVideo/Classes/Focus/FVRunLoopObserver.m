@@ -8,6 +8,23 @@
 
 #import "FVRunLoopObserver.h"
 
+NS_INLINE void FVInvalidObserver(CFRunLoopObserverRef observer) {
+    if (CFRunLoopObserverIsValid(observer)) {
+        CFRunLoopObserverInvalidate(observer);
+    }
+}
+
+NS_INLINE void FVRemoveObserverInMain(CFRunLoopObserverRef observer, CFRunLoopMode mode) {
+    if (CFRunLoopContainsObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode)) {
+        CFRunLoopRemoveObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode);
+    }
+}
+
+NS_INLINE void FVAddObserverInMain(CFRunLoopObserverRef observer, CFRunLoopMode mode) {
+    FVRemoveObserverInMain(observer, mode);
+    CFRunLoopAddObserver([[NSRunLoop mainRunLoop] getCFRunLoop], observer, mode);
+}
+
 @interface _FVRunLoopTask : NSObject
 @property (nonatomic, copy) void (^block)(CFRunLoopObserverRef, CFRunLoopActivity);
 @property (nonatomic, copy) NSString *key;
@@ -63,7 +80,7 @@
             }];
             [strong_self.tasks removeObjectsInArray:invalidTasks];
             if (strong_self && !strong_self.tasks.count) {
-                fv_main_remove_observer(strong_self->_runloopObserver, (__bridge CFStringRef)strong_self.mode);
+                FVRemoveObserverInMain(strong_self->_runloopObserver, (__bridge CFStringRef)strong_self.mode);
             }
         });
     }
@@ -77,7 +94,7 @@
     task.block = block;
     task.key = key;
     if (!self.tasks.count) {
-        fv_main_add_observer(_runloopObserver, (__bridge CFStringRef)self.mode);
+        FVAddObserverInMain(_runloopObserver, (__bridge CFStringRef)self.mode);
     }
     [self.tasks addObject:task];
 }
@@ -96,8 +113,8 @@
 }
 
 - (void)dealloc {
-    fv_main_remove_observer(_runloopObserver, (__bridge CFStringRef)self.mode);
-    fv_invalid_observer(_runloopObserver);
+    FVRemoveObserverInMain(_runloopObserver, (__bridge CFStringRef)self.mode);
+    FVInvalidObserver(_runloopObserver);
     CFRelease(_runloopObserver);
     _runloopObserver = nil;
 }
