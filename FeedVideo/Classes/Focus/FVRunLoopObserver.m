@@ -45,7 +45,7 @@ NS_INLINE void FVAddObserverInMain(CFRunLoopObserverRef observer, CFRunLoopMode 
 }
 
 - (NSUInteger)hash {
-    return self.key.hash | self.hash;
+    return self.key.hash;
 }
 
 @end

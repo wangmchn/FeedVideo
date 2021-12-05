@@ -5,6 +5,7 @@
 //  Created by markmwang on 2021/12/3.
 //
 
+#import "FVFeedVideoUtil.h"
 #import "FVWeakReference.h"
 #import <objc/runtime.h>
 

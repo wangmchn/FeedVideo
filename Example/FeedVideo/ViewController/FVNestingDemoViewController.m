@@ -117,7 +117,7 @@
         return nil;
     }
     NSString *nextVid = [self vidAtIndex:indexPath.row offset:1];
-    if (nextVid.length) {
+    if ([nextVid isKindOfClass:NSString.class] && nextVid.length) {
         return @[nextVid];
     }
     return nil;

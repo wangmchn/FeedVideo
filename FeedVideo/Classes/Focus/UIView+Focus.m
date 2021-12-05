@@ -15,7 +15,7 @@
 }
 
 - (void)fv_focusWithContext:(nullable id)context {
-    [self fv_focusWithType:FVFocusTypeScroll context:context];
+    [self fv_focusWithType:FVFocusTypeAfterScroll context:context];
 }
 
 - (void)fv_focusWithType:(FVFocusType)type context:(nullable id)context {
@@ -25,7 +25,7 @@
     }
     FVFocusMonitor *monitor = fv_getParentMonitor(self);
     UIView<FVContainerSupplier> *supplier = (UIView<FVContainerSupplier> *)monitor.ownerSupplier;
-    if (![supplier conformsToProtocol:@protocol(FVContainerSupplier)]|| ![supplier isKindOfClass:UIView.class]) {
+    if (![supplier conformsToProtocol:@protocol(FVContainerSupplier)]) {
         NSAssert(0, @"view '%@' could only be focus when it has a supplier.", self);
         return;
     }
@@ -35,7 +35,11 @@
         return;
     }
     FVIndexPathNode *node = FVIndexPathNode.fv_root(indexPath);
-    [supplier fv_focusWithType:type context:context alsoNode:node];
+    if ([supplier isKindOfClass:[UIView class]]) {
+        [supplier fv_focusWithType:type context:context alsoNode:node];
+    } else {
+        [monitor appointNode:node focusType:type context:context];
+    }
 }
 
 - (void)fv_focusWithType:(FVFocusType)type context:(nullable id)context alsoNode:(FVIndexPathNode *)node {
@@ -45,7 +49,7 @@
     }
     FVFocusMonitor *monitor = fv_getParentMonitor(self);
     UIView<FVContainerSupplier> *supplier = (UIView<FVContainerSupplier> *)monitor.ownerSupplier;
-    if (![supplier conformsToProtocol:@protocol(FVContainerSupplier)] || ![supplier isKindOfClass:UIView.class]) {
+    if (![supplier conformsToProtocol:@protocol(FVContainerSupplier)]) {
         /// 如果没有上一级 supplier 了，那么直接聚焦当前 supplier 的指定 node 就可以了
         [monitor appointNode:node focusType:type context:context];
         return;
@@ -57,7 +61,11 @@
     }
     FVIndexPathNode *superNode = FVIndexPathNode.fv_root(indexPath);
     superNode.child = node;
-    [supplier fv_focusWithType:type context:context alsoNode:superNode];
+    if ([supplier isKindOfClass:[UIView class]]) {
+        [supplier fv_focusWithType:type context:context alsoNode:superNode];
+    } else {
+        [monitor appointNode:superNode focusType:type context:context];
+    }
 }
 
 @end
