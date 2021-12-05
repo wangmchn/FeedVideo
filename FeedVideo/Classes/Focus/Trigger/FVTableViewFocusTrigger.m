@@ -44,21 +44,17 @@
     [self trigger];
 }
 
-- (void)fv_tableView:(UITableView *)tableView scrollToRowAtIndexPath:(nonnull NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated {
+- (void)fv_tableview:(UITableView *)tableView scrollRectToVisible:(CGRect)rect animated:(BOOL)animated {
     // 这里只需要增对无动画的去响应就可以了，因为 animated 会触发 -scrollViewDidEndScrollingAnimation: 回调
-    if (!animated) {
+    CGRect visibleRect = CGRectMake(tableView.contentOffset.x,
+                                    tableView.contentOffset.y,
+                                    tableView.bounds.size.width,
+                                    tableView.bounds.size.height);
+    if (!animated || CGRectContainsRect(visibleRect, rect)) {
         [tableView layoutIfNeeded];
         [self trigger];
     } else {
-        // FIXME: 更准确的判断方式 && 如何判断 isAnimating
-        CGPoint contentOffset = tableView.contentOffset;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (VFPPointEqualToPoint(contentOffset, tableView.contentOffset)) {
-                // 有动画可能没发生滚动，不会触发回调，这里间隔 0.1s 检查下 contentOffset 吧
-                [tableView layoutIfNeeded];
-                [self trigger];
-            }
-        });
+        self.isAnimating = YES;
     }
 }
 
@@ -83,8 +79,9 @@
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    [super scrollViewDidEndScrollingAnimation:scrollView];
     self.isAnimating = NO;
+    /// super 调用了 -trigger，所以先设置 NO
+    [super scrollViewDidEndScrollingAnimation:scrollView];
 }
 
 - (void)trigger {

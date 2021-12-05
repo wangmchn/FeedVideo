@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 - (void)fv_collectionViewDidUpdateData:(UICollectionView *)collectionView;
-- (void)fv_collectionView:(UICollectionView *)collectionView scrollToItemAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UICollectionViewScrollPosition)scrollPosition animated:(BOOL)animated;
+- (void)fv_collectionView:(UICollectionView *)collectionView scrollRectToVisible:(CGRect)rect animated:(BOOL)animated;
+/// srollToIndexPath 会最终调用 setContentOffset:animated:
 - (void)fv_collectionView:(UICollectionView *)collectionView setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 
 @end

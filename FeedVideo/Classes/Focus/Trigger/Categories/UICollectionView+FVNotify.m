@@ -29,8 +29,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [self fv_swizzleInstanceMethod:@selector(reloadData) with:@selector(fv_reloadData)];
-        [self fv_swizzleInstanceMethod:@selector(scrollToItemAtIndexPath:atScrollPosition:animated:) with:@selector(fv_scrollToItemAtIndexPath:atScrollPosition:animated:)];
         [self fv_swizzleInstanceMethod:@selector(performBatchUpdates:completion:) with:@selector(fv_performBatchUpdates:completion:)];
+        [self fv_swizzleInstanceMethod:@selector(scrollRectToVisible:animated:) with:@selector(fv_scrollRectToVisible:animated:)];
         [self fv_swizzleInstanceMethod:@selector(setContentOffset:animated:) with:@selector(fv_setContentOffset:animated:)];
     });
 }
@@ -55,19 +55,19 @@
     }
 }
 
-- (void)fv_scrollToItemAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UICollectionViewScrollPosition)scrollPosition animated:(BOOL)animated {
-    [self fv_scrollToItemAtIndexPath:indexPath atScrollPosition:scrollPosition animated:animated];
-    
-    if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_collectionView:scrollToItemAtIndexPath:atScrollPosition:animated:)]) {
-        [self.fv_notifyDelegate fv_collectionView:self scrollToItemAtIndexPath:indexPath atScrollPosition:scrollPosition animated:animated];
-    }
-}
-
 - (void)fv_setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated {
     [self fv_setContentOffset:contentOffset animated:animated];
     
     if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_collectionView:setContentOffset:animated:)]) {
         [self.fv_notifyDelegate fv_collectionView:self setContentOffset:contentOffset animated:animated];
+    }
+}
+
+- (void)fv_scrollRectToVisible:(CGRect)rect animated:(BOOL)animated {
+    [self fv_scrollRectToVisible:rect animated:animated];
+    
+    if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_collectionView:scrollRectToVisible:animated:)]) {
+        [self.fv_notifyDelegate fv_collectionView:self scrollRectToVisible:rect animated:animated];
     }
 }
 

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 - (void)fv_tableViewDidUpdateData:(UITableView *)tableView;
-- (void)fv_tableView:(UITableView *)tableView scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated;
+- (void)fv_tableview:(UITableView *)tableView scrollRectToVisible:(CGRect)rect animated:(BOOL)animated;
 - (void)fv_tableview:(UITableView *)tableView setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 
 @end

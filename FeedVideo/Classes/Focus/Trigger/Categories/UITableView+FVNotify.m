@@ -30,7 +30,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [self fv_swizzleInstanceMethod:@selector(reloadData) with:@selector(fv_reloadData)];
-        [self fv_swizzleInstanceMethod:@selector(scrollToRowAtIndexPath:atScrollPosition:animated:) with:@selector(fv_scrollToRowAtIndexPath:atScrollPosition:animated:)];
+        [self fv_swizzleInstanceMethod:@selector(scrollRectToVisible:animated:) with:@selector(fv_scrollRectToVisible:animated:)];
         [self fv_swizzleInstanceMethod:@selector(setContentOffset:animated:) with:@selector(fv_setContentOffset:animated:)];
         if (@available(iOS 11, *)) {
             [self fv_swizzleInstanceMethod:@selector(performBatchUpdates:completion:) with:@selector(fv_performBatchUpdates:completion:)];
@@ -69,19 +69,19 @@
     }];
 }
 
-- (void)fv_scrollToRowAtIndexPath:(NSIndexPath *)indexPath atScrollPosition:(UITableViewScrollPosition)scrollPosition animated:(BOOL)animated {
-    [self fv_scrollToRowAtIndexPath:indexPath atScrollPosition:scrollPosition animated:animated];
-    
-    if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_tableView:scrollToRowAtIndexPath:atScrollPosition:animated:)]) {
-        [self.fv_notifyDelegate fv_tableView:self scrollToRowAtIndexPath:indexPath atScrollPosition:scrollPosition animated:animated];
-    }
-}
-
 - (void)fv_setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated {
     [self fv_setContentOffset:contentOffset animated:animated];
     
     if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_tableview:setContentOffset:animated:)]) {
         [self.fv_notifyDelegate fv_tableview:self setContentOffset:contentOffset animated:animated];
+    }
+}
+
+- (void)fv_scrollRectToVisible:(CGRect)rect animated:(BOOL)animated {
+    [self fv_scrollRectToVisible:rect animated:animated];
+    
+    if ([self.fv_notifyDelegate respondsToSelector:@selector(fv_tableview:scrollRectToVisible:animated:)]) {
+        [self.fv_notifyDelegate fv_tableview:self scrollRectToVisible:rect animated:animated];
     }
 }
 
