@@ -11,7 +11,7 @@
 #import "UITableView+FVNotify.h"
 
 @interface FVTableViewFocusTrigger () <UITableViewDelegate, VFPTableViewNotifyDelegate>
-
+@property (nonatomic, assign) BOOL isAnimating;
 @end
 
 @implementation FVTableViewFocusTrigger
@@ -49,6 +49,16 @@
     if (!animated) {
         [tableView layoutIfNeeded];
         [self trigger];
+    } else {
+        // FIXME: 更准确的判断方式 && 如何判断 isAnimating
+        CGPoint contentOffset = tableView.contentOffset;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (VFPPointEqualToPoint(contentOffset, tableView.contentOffset)) {
+                // 有动画可能没发生滚动，不会触发回调，这里间隔 0.1s 检查下 contentOffset 吧
+                [tableView layoutIfNeeded];
+                [self trigger];
+            }
+        });
     }
 }
 
@@ -58,6 +68,8 @@
     if (!animated || VFPPointEqualToPoint(contentOffset, tableView.contentOffset)) {
         [tableView layoutIfNeeded];
         [self trigger];
+    } else {
+        self.isAnimating = YES;
     }
 }
 
@@ -68,6 +80,18 @@
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.delegate trigger:self viewDidEndDisplaying:cell indexPath:indexPath];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [super scrollViewDidEndScrollingAnimation:scrollView];
+    self.isAnimating = NO;
+}
+
+- (void)trigger {
+    if (self.isAnimating) {
+        return;
+    }
+    [super trigger];
 }
 
 @end

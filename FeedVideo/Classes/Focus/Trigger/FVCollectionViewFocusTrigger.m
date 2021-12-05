@@ -11,7 +11,7 @@
 #import "UICollectionView+FVNotify.h"
 
 @interface FVCollectionViewFocusTrigger () <UICollectionViewDelegate, FVCollectionViewNotifyDelegate>
-
+@property (nonatomic, assign) BOOL isAnimating;
 @end
 
 @implementation FVCollectionViewFocusTrigger
@@ -49,7 +49,7 @@
     if (!animated) {
         [self trigger];
     } else {
-        // FIXME: 更准确的判断方式
+        // FIXME: 更准确的判断方式 && 如何判断 isAnimating
         CGPoint contentOffset = collectionView.contentOffset;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (VFPPointEqualToPoint(contentOffset, collectionView.contentOffset)) {
@@ -67,6 +67,8 @@
     if (!animated || VFPPointEqualToPoint(contentOffset, collectionView.contentOffset)) {
         [collectionView layoutIfNeeded];
         [self trigger];
+    } else {
+        self.isAnimating = YES;
     }
 }
 
@@ -85,6 +87,19 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingSupplementaryView:(UICollectionReusableView *)view forElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath {
     [self.delegate trigger:self viewDidEndDisplaying:view indexPath:indexPath];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [super scrollViewDidEndScrollingAnimation:scrollView];
+    self.isAnimating = NO;
+}
+
+- (void)trigger {
+    // 如过滚动动画过程中
+    if (self.isAnimating) {
+        return;
+    }
+    [super trigger];
 }
 
 @end

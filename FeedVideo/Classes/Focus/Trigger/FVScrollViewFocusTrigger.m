@@ -8,7 +8,7 @@
 
 #import "FVScrollViewFocusTrigger.h"
 
-@interface FVScrollViewFocusTrigger () <UIScrollViewDelegate>
+@interface FVScrollViewFocusTrigger ()
 
 @end
 

@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FVScrollViewFocusTrigger : FVFocusTrigger
+@interface FVScrollViewFocusTrigger : FVFocusTrigger <UIScrollViewDelegate>
 
 @end
 
