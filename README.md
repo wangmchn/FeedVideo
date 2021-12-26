@@ -25,23 +25,33 @@ pod 'FeedVideo', :git => 'https://github.com/wangmchn/FeedVideo.git'
 
 ## 详解
 `FeedVideo` 主要由以下部分组成：
-#### FVFeedVideoManager
+### FVFeedVideoManager
 **门面类**，对外提供接口及能力，使用者需要通过初始化该对象来为页面集成播放能力。
 1. `playerProvider` 使用者需要实现该接口来提供数据对应的播放器实例，可通过 `FVReusePool` 来集成播放器复用的功能，也可以自定义复用逻辑。
 2. `supplier` 需要实现该接口来提供当前页面视图的聚焦检测器 `FVFocusMonitor`，`FVFocusMonitor` 观察了视图的变化，在聚焦的视图发生变化时，来通知 `FVFeedVideoManager` 进行播放器切换，详见 `FVFocusMonitor`
 3. `preloadMgr` 可通过实现该接口集成预加载能力，具体详见 `FVPreloadMgrProtocol`
 4. 其他属性详见 `FVFeedVideoManager.h`
 
-#### FVFocusMonitor
+### FVFocusMonitor
 聚焦检测器，它观察了视图的变化，在聚焦的视图发生变化时，发出通知。它由两大部分组成 `FVFocusTrigger` 和 `FVFocusCalculator`。
 他们的关系如下图所示：
 
 <img src="https://github.com/wangmchn/Resource/blob/master/FVFocusMonitor.jpg" width="80%">
 
-##### FVFocusTrigger
+#### FVFocusTrigger
 触发器，负责监听视图变化，并通知 `FVFocusMonitor`。例如 `FVTableViewFocusTrigger/FVCollectionViewFocusTrigger` 分别监听了 `UITableView/UICollectionView` 的滚动/消失以及刷新等事件，如有自定义的视图，可通过继承 `FVFocusTrigger` 来定制自己的触发器。具体内容详见 `FVFocusTrigger` 文件。
-##### FVFocusCalculator
+#### FVFocusCalculator
 计算器，负责计算当前视图层级中，聚焦的视图。例如 `FVCollectionViewFocusCalculator/FVTableViewFocusCalculator` 分别通过遍历 `UICollectionView/UITableView` 的 `visibleCells`, 通过一定的策略得出当前聚焦的视图（例如从上到下第一个灯）。如有自定义的视图，可通过继承 `FVFocusCalculator` 来定制视图的聚焦计算逻辑。具体内容详见 `FVFocusCalculator` 文件。
+#### FVContainerSupplier & FVPlayerContainer
+`FeedVideo` 的视图层级中由两大类型视图组成 `FVContainerSupplier/FVPlayerContainer`。
+`FVPlayerContainer`  即为播放器的容器，当该类型视图聚焦时，播放器将直接被添加到该类型的视图上。
+`FVContainerSupplier` 为提供 `FVPlayerContainer` 视图视图，它内部需要含有一个 `FVFocusMonitor`，用于监视他自身的视图聚焦变化，以获取 `FVPlayerContainer` 聚焦的时机。他们的关系如下图所示：
+
+<img src="https://github.com/wangmchn/Resource/blob/master/Supplier%26Container.jpg" width="80%">
+
+#### FVContinueHandler
+负责处理续播逻辑，在播放器调用 `Finish` 后，获取下一个需要播放的结点，并使该结点的聚焦。
+
 ## License
 
 FeedVideo is available under the MIT license. See the LICENSE file for more info.
