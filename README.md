@@ -26,15 +26,16 @@ pod 'FeedVideo', :git => 'https://github.com/wangmchn/FeedVideo.git'
 ## 详解
 `FeedVideo` 主要由以下部分组成：
 #### `FVFeedVideoManager` 
-**门面类**，对外提供接口及能力，使用者需要通过初始化该对象来为页面集成播放能力。
-1. `playerProvider` 使用者需要实现该接口来提供数据对应的播放器实例，可通过 `FVReusePool` 来集成播放器复用的功能，也可以自定义复用逻辑。
-2. `supplier` 需要实现该接口来提供当前页面视图的聚焦检测器 `FVFocusMonitor`，`FVFocusMonitor` 观察了视图的变化，在聚焦的视图发生变化时，来通知 `FVFeedVideoManager` 进行播放器切换，详见 `FVFocusMonitor`
+**门面类**，对外提供接口及能力，使用者需要通过初始化该对象来为页面集成播放能力。
+1. `playerProvider` 使用者需要实现该接口来提供数据对应的播放器实例，可通过 `FVReusePool` 来集成播放器复用的功能，也可以自定义复用逻辑。
+2. `supplier` 需要实现该接口来提供当前页面视图的聚焦检测器 `FVFocusMonitor`，`FVFocusMonitor` 观察了视图的变化，在聚焦的视图发生变化时，来通知 `FVFeedVideoManager` 进行播放器切换，详见 `FVFocusMonitor`
 3. `preloadMgr` 可通过实现该接口集成预加载能力，具体详见 `FVPreloadMgrProtocol`
 4. 其他属性详见 `FVFeedVideoManager.h`
 
 #### `FVFocusMonitor`
-聚焦检测器，它观察了视图的变化，在聚焦的视图发生变化时，发出通知。它由两大部分组成 `FVFocusTrigger` 和 `FVFocusCalculator`。
+聚焦检测器，它观察了视图的变化，在聚焦的视图发生变化时，发出通知。它由两大部分组成 `FVFocusTrigger` 和 `FVFocusCalculator`。
 他们的关系如下图所示：
+
 <img src="https://github.com/wangmchn/Resource/blob/master/FVFocusMonitor.jpg" width="50%">
 
 ##### `FVFocusTrigger` 
