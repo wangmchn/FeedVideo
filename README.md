@@ -9,6 +9,8 @@ FeedVideo 是一个轻量的页面播放器管理组件，重点解决了在短�
 
 业务可通过该组件，快速集成在信息流的播放功能，并通过预加载等功能，拥有优秀的播放体验。
 
+组件设计介绍：https://docs.qq.com/doc/DSW9ZelViVnlzZ0Ri?_t=1645187111489
+
 ## 示例
 
 1. 运行 `git clone https://github.com/wangmchn/FeedVideo.git`
