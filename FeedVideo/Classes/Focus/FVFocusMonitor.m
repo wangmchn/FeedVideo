@@ -8,7 +8,6 @@
 
 #import "FVFocusMonitor.h"
 #import "FVWeakReference.h"
-#import "FVSupplierCandidate.h"
 #import "FVRunLoopObserver.h"
 #import "UIView+FVAdditions.h"
 #import <objc/runtime.h>
@@ -36,7 +35,6 @@ static NSString *const kAppointKey = @"kAppointKey";
 @property (nonatomic, readwrite, nullable) __kindof UIView *abort;
 @property (nonatomic, strong) FVRunLoopObserver *defaultModeObserver;
 @property (nonatomic, strong) FVRunLoopObserver *trackingModeObserver;
-@property (nonatomic, strong) FVSupplierCandidate *candidate;
 /// 记录下下一步操作, 因为 makeFocus 不是同步完成的
 @property (nonatomic, copy) void (^triggerBlock)(void);
 @end
@@ -87,7 +85,6 @@ static NSString *const kAppointKey = @"kAppointKey";
 }
 
 - (void)clear {
-    self.candidate = nil;
     self.triggerBlock = nil;
     self.focus = nil;
     self.abort = nil;
@@ -232,10 +229,6 @@ static NSString *const kAppointKey = @"kAppointKey";
 - (void)trigger:(nonnull FVFocusTrigger *)trigger viewDidEndDisplaying:(nonnull __kindof UIView *)view indexPath:(nonnull NSIndexPath *)indexPath {
     if (![view conformsToProtocol:@protocol(FVPlayerContainer)] && ![view conformsToProtocol:@protocol(FVContainerSupplier)]) {
         return;
-    }
-    // 如果是正在计算的，直接取消
-    if (view == self.candidate.supplier) {
-        self.candidate = nil;
     }
     
     view._fv_isDisplay = NO;
@@ -392,7 +385,6 @@ static NSString *const kAppointKey = @"kAppointKey";
 }
 
 - (void)clearAllTasks {
-    self.candidate = nil;
     self.triggerBlock = nil;
 }
 
@@ -413,9 +405,6 @@ static NSString *const kAppointKey = @"kAppointKey";
             focusType:(FVFocusType)focusType
               context:(nullable FVContext *)context
            usingBlock:(FVAppointCompletionBlock)completionBlock {
-    
-    self.candidate = nil;
-    
     __weak typeof(self) weak_self = self;
     void (^notifyFocus)(void) = ^void (void) {
         __strong typeof(weak_self) strong_self = weak_self;
@@ -466,19 +455,14 @@ static NSString *const kAppointKey = @"kAppointKey";
     }
     
     if ([target conformsToProtocol:@protocol(FVContainerSupplier)]) {
-        self.candidate = [[FVSupplierCandidate alloc] initWithSupplier:target node:node];
-        [self.candidate focusWithType:focusType usingBlock:^(FVSupplierCandidate * _Nonnull candidate, BOOL findNotAuto) {
-            __strong typeof(weak_self) strong_self = weak_self;
-            if (strong_self.candidate != candidate) {
-                return;
-            }
-            if (findNotAuto && !isAppoint) {
-                notifyAbort();
-            } else {
-                notifyFocus();
-            }
-            strong_self.candidate = nil;
-        }];
+        FVFocusMonitor *monitor = fv_getChildMonitor(target);
+        monitor.delegate = self.delegate;
+        if (node.child) {
+            [monitor appointNode:node.child focusType:focusType context:context];
+        } else {
+            [monitor recalculate];
+        }
+        notifyFocus();
     } else {
         if (!fv_isAutoPlay(target) && !isAppoint) {
             notifyAbort();
