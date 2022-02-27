@@ -98,7 +98,9 @@ pod 'FeedVideo', :git => 'https://github.com/wangmchn/FeedVideo.git'
     [self fv_focus];
 }
 ```
-## 详解
+## 详细介绍
+组件的整体工作流程如下图所示
+<img width="800" alt="image (1)" src="https://user-images.githubusercontent.com/9441848/155889110-0f84287a-7c31-4370-8294-d0159c0a0dc9.png">
 
 组件设计介绍：[关于如何在内容流集成播放这件事](https://docs.qq.com/doc/DSW9ZelViVnlzZ0Ri?_t=1645187111489)
 
